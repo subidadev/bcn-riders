@@ -79,6 +79,12 @@
   // Riders, pedalling. 8 frames per crank turn. The Dude wears the sky wind vest;
   // Walter rides in khaki with a beard and amber shooting glasses.
   const LOOKS = {
+    // Peloton kits
+    red:    { vest: "#d6453d", vest2: "#e8736b", logo: C.white, sleeve: "#a8322b", shorts: C.ink, shortsFar: "#000", shades: C.ink },
+    yellow: { vest: "#f2c84b", vest2: "#f7dc85", logo: C.ink, sleeve: "#c9a22e", shorts: C.ink, shortsFar: "#000", shades: C.ink },
+    white:  { vest: C.white, vest2: C.sky3, logo: C.royal, sleeve: C.sky2, shorts: C.royal, shortsFar: "#22328a", shades: C.ink },
+    green:  { vest: "#4f9a5a", vest2: "#7cbf86", logo: C.white, sleeve: "#3a7744", shorts: C.ink, shortsFar: "#000", shades: C.ink },
+    royal:  { vest: C.royal, vest2: "#5a6fd0", logo: C.sky, sleeve: "#22328a", shorts: C.ink, shortsFar: "#000", shades: C.ink },
     dude:   { vest: C.sky, vest2: C.sky2, logo: C.royal, sleeve: C.navy, shorts: "#4a63e0", shortsFar: "#2c3f9e", shades: C.ink, hair: "#7a5230", beard: null, goatee: "#7a5230" },
     walter: { vest: "#b8ab6c", vest2: "#d4c98f", logo: "#6b6a3f", sleeve: "#6b6a3f", shorts: "#9aa3b5", shortsFar: "#6f7889", shades: "#e0a030", hair: null, beard: "#3b2a1e", goatee: null },
   };
@@ -284,7 +290,29 @@
   // ---- Intro: the logo resolves out of big pixels, a rider zips past --------
   const intro = document.getElementById("intro");
   if (intro && document.documentElement.classList.contains("has-intro")) {
-    actor("intro-rider", { w: 34, h: 25, scale: 4, fps: 16, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
+    // The breakaway: lead rider plus a peloton that keeps chasing over the page
+    const race = document.getElementById("race");
+    const pack = document.getElementById("race-pack");
+    const small = innerWidth < 560;
+    actor("race-lead", { w: 34, h: 25, scale: small ? 3 : 4, fps: 18, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
+    // [kit, x, y] — y lifts riders further back in the bunch
+    const BUNCH = [
+      ["yellow", 0.62, 16], ["green", 1.75, 18], ["white", 2.85, 14],
+      ["red", 0, 2], ["royal", 1.1, 0], ["walter", 2.2, 4], ["white", 3.25, 0],
+    ];
+    const unit = small ? 44 : 64, sc = small ? 2 : 3;
+    BUNCH.forEach(([kit, x, y], i) => {
+      const c = document.createElement("canvas");
+      c.className = "px";
+      c.id = `race-p${i}`;
+      c.style.left = `${x * unit}px`;
+      c.style.bottom = `${y * (small ? 0.7 : 1)}px`;
+      pack.appendChild(c);
+      actor(c.id, { w: 34, h: 25, scale: sc, fps: 16, draw: (s, f) => drawRider(s, f + i * 3, LOOKS[kit]) });
+    });
+    pack.style.width = `${3.25 * unit + 34 * sc}px`;
+    pack.addEventListener("animationend", () => race.remove());
+    race.classList.add("is-go");
     const cv = document.getElementById("intro-logo");
     const g = cv.getContext("2d");
     const tmp = document.createElement("canvas"), tg = tmp.getContext("2d");
@@ -313,7 +341,7 @@
     const run = () => {
       [56, 32, 18, 11, 7, 4, 2, 1].forEach((b, i) => setTimeout(() => pixelate(b), 150 + i * 105));
       intro.classList.add("is-go");
-      setTimeout(finish, 2400);
+      setTimeout(finish, 2000);
     };
     img.onload = run;
     img.onerror = finish;
