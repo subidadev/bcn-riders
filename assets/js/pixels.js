@@ -302,7 +302,7 @@
     const S_BIG = small ? 4 : 6, S_SMALL = small ? 2 : 3;
     const T_TRANS = 1.7, T_DUR = 1.0;           // seconds
     let tTrans = T_TRANS, transitioning = false, finished = false;
-    const t0 = performance.now();
+    let t0 = performance.now();
     const clock = () => (performance.now() - t0) / 1000;
     const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
     const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -338,10 +338,17 @@
       drawRider(sp, f, look);
       rg.drawImage(sprite, Math.round(x * dpr), Math.round((base - 25 * s) * dpr), Math.round(34 * s * dpr), Math.round(25 * s * dpr));
     }
+    function finishIntro() {
+      root.classList.remove("has-intro"); // reveals the real nav logo under the flown one
+      intro.remove();
+    }
     function endRace() {
       finished = true;
       raceCv.remove();
       root.classList.remove("race-on");
+      // If the race ends without the transition having run (e.g. the tab was in the
+      // background the whole time), clear the intro too.
+      if (!transitioning) { transitioning = true; finishIntro(); }
     }
     function tick() {
       if (finished) return;
@@ -402,16 +409,24 @@
         cv.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width})`;
       }
       intro.classList.add("is-out");
-      setTimeout(() => {
-        root.classList.remove("has-intro"); // reveals the real nav logo under the flown one
-        intro.remove();
-      }, T_DUR * 1000 + 60);
+      setTimeout(finishIntro, T_DUR * 1000 + 60);
     }
     const skip = () => startTransition();
     intro.addEventListener("click", skip);
     addEventListener("keydown", skip, { once: true });
-    setTimeout(() => { if (!finished) endRace(); }, 12000); // safety net
-    requestAnimationFrame(tick);
+    // Start the clock only once the tab is actually visible (background tabs and
+    // prerendered pages don't run animation frames).
+    const begin = () => {
+      t0 = performance.now();
+      setTimeout(() => { if (!finished) endRace(); }, 12000); // safety net
+      requestAnimationFrame(tick);
+    };
+    if (!document.hidden) begin();
+    else document.addEventListener("visibilitychange", function onShow() {
+      if (document.hidden) return;
+      document.removeEventListener("visibilitychange", onShow);
+      begin();
+    });
   }
 
   window.BCNPixels = {
