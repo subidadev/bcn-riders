@@ -10,6 +10,13 @@
   <meta property="og:image" content="assets/img/jersey-back.jpg">
   <meta name="theme-color" content="#1b2a44">
   <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <script>
+    // Play the logo intro once per visit, and never for reduced motion.
+    try {
+      if (!sessionStorage.getItem("bcnr-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+        document.documentElement.classList.add("has-intro");
+    } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -17,6 +24,13 @@
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+
+<div class="intro" id="intro" aria-hidden="true">
+  <canvas class="intro__logo" id="intro-logo"></canvas>
+  <span class="intro__tag">Membership drive · 2027</span>
+  <div class="intro__road"><canvas class="px intro__rider" id="intro-rider"></canvas></div>
+  <span class="intro__skip">Tap to skip</span>
+</div>
 
 <header class="nav" id="top">
   <div class="wrap nav__inner">
@@ -61,9 +75,9 @@
       </div>
     </div>
     <div class="pxroad">
-      <button class="pxrider" type="button" aria-label="Click the rider for a Big Lebowski quote">
-        <span class="pxbubble" aria-hidden="true"></span>
-        <canvas class="px" id="px-rider" aria-hidden="true"></canvas>
+      <button class="pxduo" type="button" aria-label="Click the Dude and Walter for their next exchange">
+        <span class="pxrider pxrider--walter"><span class="pxbubble" aria-hidden="true"></span><canvas class="px" id="px-walter" aria-hidden="true"></canvas></span>
+        <span class="pxrider pxrider--dude"><span class="pxbubble" aria-hidden="true"></span><canvas class="px" id="px-rider" aria-hidden="true"></canvas></span>
       </button>
     </div>
   </section>
@@ -184,7 +198,10 @@
 
         <div class="toast" id="toast" role="status" hidden>
           <canvas class="px toast__px" id="px-strike" aria-hidden="true"></canvas>
-          <span class="toast__quote">“The Dude abides.”</span>
+          <span class="convo toast__convo">
+            <span><b>Walter</b> Paste it in the field. Exactly as written. Am I wrong?</span>
+            <span><b>The Dude</b> You're not wrong, Walter. The Dude abides.</span>
+          </span>
           <b>Copied ✓</b> In Revolut, paste into <em>"2027 BCN Riders team kit and membership!"</em> and then tap <em>Continue to checkout</em>.
         </div>
       </form>
@@ -215,7 +232,11 @@
       <p class="sub">All measurements are body measurements in centimetres. Go by your measurements, not your usual size in other brands. Pro and Sport jerseys share one chart; the wind vest uses your jersey size.</p>
       <p class="pxquote">
         <canvas class="px" id="px-pin" aria-hidden="true"></canvas>
-        <span>“This is not ’Nam. This is bowling. There are rules.”<small>Same goes for sizing. Measure first, then pick.</small></span>
+        <span class="convo">
+          <span><b>Walter</b> You measure your chest. You measure your waist. This is not ’Nam. There are rules.</span>
+          <span><b>The Dude</b> I usually just go by feel, man.</span>
+          <span><b>Walter</b> And how’s that working out for you, Dude?</span>
+        </span>
       </p>
 
       <div class="tabs" role="tablist">
@@ -337,7 +358,10 @@
         </div>
 
         <p class="library__count" id="route-count"></p>
-        <p class="library__quip" id="route-quip" hidden>“Sometimes you eat the bar, and sometimes, well, he eats you.”</p>
+        <p class="library__quip convo" id="route-quip" hidden>
+          <span><b>Walter</b> Sixteen hundred metres. I've carried heavier things up worse hills.</span>
+          <span><b>The Dude</b> Sometimes you eat the bar, man.</span>
+        </p>
         <div class="routes" id="route-list"></div>
         <button class="btn btn--ghost btn--block" id="route-more" hidden>Show more routes</button>
       </div>
@@ -388,7 +412,11 @@
     <p>Barcelona · Girona · since 2022</p>
     <div class="footer__dude">
       <canvas class="px" id="px-russian" aria-hidden="true"></canvas>
-      <p>“Careful, man, there’s a beverage here!”<small>Quotes from The Big Lebowski (1998)</small></p>
+      <p class="convo">
+        <span><b>The Dude</b> Careful, man, there’s a beverage here!</span>
+        <span><b>Walter</b> On a group ride? Has the whole world gone f*cking crazy?</span>
+        <small>With apologies to The Big Lebowski (1998)</small>
+      </p>
     </div>
     <p><a href="https://ridewithgps.com/organizations/8423-barcelona-cycling-network" target="_blank" rel="noopener">Ride with GPS club</a> · Kit by Obbi, made in Italy</p>
   </div>

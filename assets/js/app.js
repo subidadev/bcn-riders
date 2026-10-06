@@ -78,7 +78,7 @@
       payBtn.textContent = `€${t.price} payment link coming soon`;
       payBtn.setAttribute("aria-disabled", "true");
       payBtn.removeAttribute("href");
-      payNote.textContent = "The socks-only checkout isn't live yet. Check back soon, or ask in the group.";
+      payNote.textContent = "The socks-only checkout isn't live yet. Check back soon, or ask in the group. (Walter: “You don't rush socks, Dude.”)";
     } else {
       payBtn.textContent = `Copy & pay €${t.price} on Revolut →`;
       payBtn.removeAttribute("aria-disabled");
@@ -446,7 +446,10 @@
             <a href="${rwgps(r.id)}" target="_blank" rel="noopener" aria-label="Open ${esc(title(r))} on Ride with GPS">RWGPS ↗</a>
           </div>
         </article>`).join("")
-      : `<p class="routes__empty"><span class="routes__quip">“Yeah, well, that's just, like, your opinion, man.”</span>No routes match that. Try another search or filter.</p>`;
+      : `<div class="routes__empty">
+          <p class="convo routes__quip"><span><b>The Dude</b> There's no route there, man.</span><span><b>Walter</b> Then we build one. Nobody f*cks with this club's routes.</span></p>
+          No routes match that. Try another search or filter.
+        </div>`;
     $("#route-quip").hidden = sort !== "climb" || !all.length;
     moreBtn.hidden = all.length <= shown;
     renderMap(all, { fit });

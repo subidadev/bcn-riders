@@ -76,8 +76,13 @@
   reduce.addEventListener?.("change", () => actors.forEach((a) => paint(a, reduce.matches ? a.still : a.frame)));
 
   // ---- Sprites -------------------------------------------------------------
-  // Rider in the club kit, pedalling. 8 frames per crank turn.
-  function drawRider(s, f) {
+  // Riders, pedalling. 8 frames per crank turn. The Dude wears the sky wind vest;
+  // Walter rides in khaki with a beard and amber shooting glasses.
+  const LOOKS = {
+    dude:   { vest: C.sky, vest2: C.sky2, logo: C.royal, sleeve: C.navy, shorts: "#4a63e0", shortsFar: "#2c3f9e", shades: C.ink, hair: "#7a5230", beard: null, goatee: "#7a5230" },
+    walter: { vest: "#b8ab6c", vest2: "#d4c98f", logo: "#6b6a3f", sleeve: "#6b6a3f", shorts: "#9aa3b5", shortsFar: "#6f7889", shades: "#e0a030", hair: null, beard: "#3b2a1e", goatee: null },
+  };
+  function drawRider(s, f, look = LOOKS.dude) {
     const t = ((f % 8) / 8) * Math.PI * 2;
     const R = [7, 18], F = [26, 18], B = [15, 18], S = [13, 10], H = [23, 10], hip = [13, 8], L = 6;
     const wheel = ([cx, cy]) => {
@@ -103,22 +108,25 @@
     const P2 = [B[0] - Math.cos(t) * 3, B[1] - Math.sin(t) * 3];
 
     wheel(R); wheel(F);
-    leg(P2, C.royalDark, C.skinDark);
+    leg(P2, look.shortsFar, C.skinDark);
     for (const [a, b] of [[R, B], [B, S], [S, R], [S, H], [H, B], [H, F]]) s.line(a[0], a[1], b[0], b[1], C.white);
     s.line(11, 9, 14, 9, C.ink);                       // saddle
     s.line(23, 10, 25, 8, C.ink); s.line(26, 8, 26, 10, C.ink); // stem + drops
     s.line(B[0], B[1], P1[0], P1[1], C.ink);           // crank
-    leg(P1, C.shorts, C.skin);
-    s.line(hip[0], hip[1], 20, 4, C.sky);               // torso in the sky wind vest
-    s.line(hip[0], hip[1] - 1, 20, 3, C.sky);
-    s.line(hip[0] + 1, hip[1] - 2, 19, 3, C.sky2);
-    s.px(16, 5, C.royal);                               // logo
-    s.line(20, 4, 22, 6, C.navy);                       // sleeve
+    leg(P1, look.shorts, C.skin);
+    s.line(hip[0], hip[1], 20, 4, look.vest);           // torso
+    s.line(hip[0], hip[1] - 1, 20, 3, look.vest);
+    s.line(hip[0] + 1, hip[1] - 2, 19, 3, look.vest2);
+    s.px(16, 5, look.logo);                             // logo
+    s.line(20, 4, 22, 6, look.sleeve);                  // sleeve
     s.line(22, 6, 25, 8, C.skin);                       // forearm
     s.rect(20, 0, 4, 2, C.white);                       // helmet
     s.px(24, 1, C.sky);
     s.rect(22, 2, 2, 2, C.skin);                        // face
-    s.px(23, 2, C.ink);                                 // shades
+    s.px(23, 2, look.shades);                           // shades
+    if (look.hair) { s.px(20, 2, look.hair); s.px(20, 3, look.hair); s.px(19, 3, look.hair); }
+    if (look.goatee) s.px(23, 3, look.goatee);
+    if (look.beard) { s.rect(21, 3, 3, 1, look.beard); s.px(22, 4, look.beard); }
   }
 
   // Tumbleweed: a seeded scribble, spun a notch per frame.
@@ -209,39 +217,109 @@
   }
 
   // ---- Mount ---------------------------------------------------------------
-  actor("px-rider", { w: 34, h: 25, scale: 4, fps: 12, draw: drawRider });
+  actor("px-rider", { w: 34, h: 25, scale: 4, fps: 12, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
+  actor("px-walter", { w: 34, h: 25, scale: 4, fps: 12, draw: (s, f) => drawRider(s, f + 3, LOOKS.walter) });
   actor("px-weed", { w: 19, h: 19, scale: 3, fps: 12, draw: drawWeed });
   actor("px-pin", { w: 13, h: 18, scale: 3, fps: 8, draw: drawBigPin });
   actor("px-russian", { w: 18, h: 20, scale: 3, fps: 6, draw: drawRussian });
   const strike = actor("px-strike", { w: 64, h: 18, scale: 3, fps: 24, draw: drawStrike, still: 60 });
 
-  // Hero rider says things when clicked, and now and then on its own.
-  const QUOTES = [
-    "The Dude abides.",
-    "Yeah, well, that's just, like, your opinion, man.",
-    "That rug really tied the room together.",
-    "Mark it zero!",
+  // Hero: the Dude and Walter ride together and talk. Click them for the next exchange.
+  // Mostly original lines in their voices; the film's own lines are kept short.
+  const EXCHANGES = [
+    [["walter", "Membership starts January first. That's not a guideline, Dude. That's a date."],
+     ["dude", "Yeah, I'm just gonna, like, coast till then, man."]],
+    [["dude", "The Dude abides."],
+     ["walter", "And the Dude renews. Before the cut-off. Am I wrong?"],
+     ["dude", "You're not wrong, Walter."]],
+    [["walter", "You pick your size off the chart. Not off a feeling."],
+     ["dude", "Yeah, well, that's just, like, your opinion, man."]],
+    [["walter", "You ride over the line, that's a foul. Mark it zero!"],
+     ["dude", "It's a group ride, man."]],
+    [["dude", "This kit really ties the club together, man."],
+     ["walter", "Like the rug, Dude. Like the rug."]],
+    [["dude", "Walter, I just wanna ride, man."],
+     ["walter", "Shut the f*ck up, Donny."],
+     ["dude", "Donny's not even here, man."]],
+    [["walter", "Am I the only one around here who gives a sh*t about the rules?"],
+     ["dude", "Yeah, man. Pretty much."]],
   ];
-  const rider = document.querySelector(".pxrider");
-  const bubble = document.querySelector(".pxbubble");
-  let q = 0, hideT, heroOnScreen = true;
-  function say() {
-    if (!rider || !bubble) return;
-    const r = rider.getBoundingClientRect();
-    bubble.classList.toggle("is-flip", r.left > innerWidth - 260);
-    bubble.textContent = `“${QUOTES[q++ % QUOTES.length]}”`;
-    bubble.classList.add("is-on");
-    clearTimeout(hideT);
-    hideT = setTimeout(() => bubble.classList.remove("is-on"), 3800);
+  const duo = document.querySelector(".pxduo");
+  const bubbles = {
+    dude: document.querySelector(".pxrider--dude .pxbubble"),
+    walter: document.querySelector(".pxrider--walter .pxbubble"),
+  };
+  const STEP = 2700;
+  let ex = 0, timers = [], talking = false, heroOnScreen = true;
+  function show(who, text) {
+    Object.values(bubbles).forEach((b) => b?.classList.remove("is-on"));
+    const b = bubbles[who];
+    if (!b) return;
+    const r = b.parentElement.getBoundingClientRect();
+    b.classList.toggle("is-flip", r.left > innerWidth - 270);
+    b.innerHTML = `<b>${who === "dude" ? "The Dude" : "Walter"}</b>`;
+    b.append(text);
+    b.classList.add("is-on");
   }
-  if (rider) {
-    rider.addEventListener("click", say);
-    if (io) new IntersectionObserver(([e]) => (heroOnScreen = e.isIntersecting)).observe(rider.parentElement);
+  function converse() {
+    timers.forEach(clearTimeout);
+    const lines = EXCHANGES[ex++ % EXCHANGES.length];
+    talking = true;
+    timers = lines.map(([who, text], i) => setTimeout(() => show(who, text), i * STEP));
+    timers.push(setTimeout(() => {
+      Object.values(bubbles).forEach((b) => b?.classList.remove("is-on"));
+      talking = false;
+    }, lines.length * STEP));
+  }
+  if (duo) {
+    duo.addEventListener("click", converse);
+    if (io) new IntersectionObserver(([e]) => (heroOnScreen = e.isIntersecting)).observe(duo.parentElement);
     setInterval(() => {
-      if (reduce.matches || !heroOnScreen) return;
-      const r = rider.getBoundingClientRect();
-      if (r.left > 20 && r.right < innerWidth - 20) say();
-    }, 9000);
+      if (reduce.matches || !heroOnScreen || talking) return;
+      const r = duo.getBoundingClientRect();
+      if (r.left > 20 && r.right < innerWidth - 20) converse();
+    }, 6000);
+  }
+
+  // ---- Intro: the logo resolves out of big pixels, a rider zips past --------
+  const intro = document.getElementById("intro");
+  if (intro && document.documentElement.classList.contains("has-intro")) {
+    actor("intro-rider", { w: 34, h: 25, scale: 4, fps: 16, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
+    const cv = document.getElementById("intro-logo");
+    const g = cv.getContext("2d");
+    const tmp = document.createElement("canvas"), tg = tmp.getContext("2d");
+    const img = new Image();
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const W = Math.round(Math.min(420, innerWidth * 0.72)), H = Math.round((W * 314) / 700);
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = `${W}px`; cv.style.height = `${H}px`;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      try { sessionStorage.setItem("bcnr-intro", "1"); } catch {}
+      intro.classList.add("is-out");
+      setTimeout(() => { intro.remove(); document.documentElement.classList.remove("has-intro"); }, 650);
+    };
+    const pixelate = (block) => {
+      g.clearRect(0, 0, cv.width, cv.height);
+      if (block <= 1) { g.imageSmoothingEnabled = true; g.drawImage(img, 0, 0, cv.width, cv.height); return; }
+      tmp.width = Math.max(1, Math.round(W / block));
+      tmp.height = Math.max(1, Math.round(H / block));
+      tg.drawImage(img, 0, 0, tmp.width, tmp.height);
+      g.imageSmoothingEnabled = false;
+      g.drawImage(tmp, 0, 0, cv.width, cv.height);
+    };
+    const run = () => {
+      [56, 32, 18, 11, 7, 4, 2, 1].forEach((b, i) => setTimeout(() => pixelate(b), 150 + i * 105));
+      intro.classList.add("is-go");
+      setTimeout(finish, 2400);
+    };
+    img.onload = run;
+    img.onerror = finish;
+    img.src = "assets/img/logo.png";
+    intro.addEventListener("click", finish);
+    addEventListener("keydown", finish, { once: true });
   }
 
   window.BCNPixels = {
