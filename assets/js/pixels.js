@@ -287,67 +287,131 @@
     }, 6000);
   }
 
-  // ---- Intro: the logo resolves out of big pixels, a rider zips past --------
+  // ---- Intro ---------------------------------------------------------------
+  // 1. Full-screen: the logo resolves out of big pixels while a large Dude rides
+  //    along the bottom and the peloton chases in.
+  // 2. Transition: the navy screen fades away, the logo glides into the nav bar,
+  //    and the riders shrink smoothly onto the page.
+  // 3. The small Dude and the chasing bunch ride on across the site, then leave.
   const intro = document.getElementById("intro");
-  if (intro && document.documentElement.classList.contains("has-intro")) {
-    // The breakaway: lead rider plus a peloton that keeps chasing over the page
-    const race = document.getElementById("race");
-    const pack = document.getElementById("race-pack");
+  const raceCv = document.getElementById("race");
+  if (intro && raceCv && document.documentElement.classList.contains("has-intro")) {
+    const root = document.documentElement;
+    root.classList.add("race-on");
     const small = innerWidth < 560;
-    actor("race-lead", { w: 34, h: 25, scale: small ? 3 : 4, fps: 18, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
-    // [kit, x, y] — y lifts riders further back in the bunch
+    const S_BIG = small ? 4 : 6, S_SMALL = small ? 2 : 3;
+    const T_TRANS = 1.7, T_DUR = 1.0;           // seconds
+    let tTrans = T_TRANS, transitioning = false, finished = false;
+    const t0 = performance.now();
+    const clock = () => (performance.now() - t0) / 1000;
+    const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const clamp01 = (x) => Math.min(1, Math.max(0, x));
+    const scaleAt = (t) => S_BIG + (S_SMALL - S_BIG) * ease(clamp01((t - tTrans) / T_DUR));
+
+    // Race canvas: one full-width strip along the bottom of the viewport
+    const rg = raceCv.getContext("2d");
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const RACE_H = small ? 150 : 210, BASE = RACE_H - 26;
+    let W = innerWidth;
+    const fit = () => {
+      W = innerWidth;
+      raceCv.width = W * dpr; raceCv.height = RACE_H * dpr;
+      raceCv.style.width = `${W}px`; raceCv.style.height = `${RACE_H}px`;
+    };
+    fit();
+    addEventListener("resize", fit);
+    const sprite = document.createElement("canvas");
+    const sp = surface(sprite, 34, 25, 1);
+
+    // Lead rider moves at a steady pace; the bunch starts far back and closes in
+    const speed = () => W / 4.2;
+    const leadX = (t) => -34 * S_BIG * 0.4 + speed() * t;
+    const gapAt = (t) => W * (0.30 - 0.22 * clamp01(t / 5.5));
+    // [kit, position in the bunch (0 = rearmost), lift (further back in the road)]
     const BUNCH = [
       ["yellow", 0.62, 16], ["green", 1.75, 18], ["white", 2.85, 14],
       ["red", 0, 2], ["royal", 1.1, 0], ["walter", 2.2, 4], ["white", 3.25, 0],
     ];
-    const unit = small ? 44 : 64, sc = small ? 2 : 3;
-    BUNCH.forEach(([kit, x, y], i) => {
-      const c = document.createElement("canvas");
-      c.className = "px";
-      c.id = `race-p${i}`;
-      c.style.left = `${x * unit}px`;
-      c.style.bottom = `${y * (small ? 0.7 : 1)}px`;
-      pack.appendChild(c);
-      actor(c.id, { w: 34, h: 25, scale: sc, fps: 16, draw: (s, f) => drawRider(s, f + i * 3, LOOKS[kit]) });
-    });
-    pack.style.width = `${3.25 * unit + 34 * sc}px`;
-    pack.addEventListener("animationend", () => race.remove());
-    race.classList.add("is-go");
+    function put(x, base, s, look, f) {
+      if (x > W || x + 34 * s < 0) return;
+      sp.clear();
+      drawRider(sp, f, look);
+      rg.drawImage(sprite, Math.round(x * dpr), Math.round((base - 25 * s) * dpr), Math.round(34 * s * dpr), Math.round(25 * s * dpr));
+    }
+    function endRace() {
+      finished = true;
+      raceCv.remove();
+      root.classList.remove("race-on");
+    }
+    function tick() {
+      if (finished) return;
+      const t = clock();
+      if (!transitioning && t >= tTrans) startTransition();
+      const s = scaleAt(t);
+      rg.clearRect(0, 0, raceCv.width, raceCv.height);
+      rg.imageSmoothingEnabled = false;
+      const lx = leadX(t), front = lx - gapAt(t), unit = 34 * s * 0.62;
+      let rear = Infinity;
+      BUNCH.forEach(([kit, pos, lift], i) => {
+        const x = front - (3.25 - pos) * unit;
+        rear = Math.min(rear, x);
+        put(x, BASE - lift * (s / 3), s, LOOKS[kit], Math.floor(t * 14) + i * 3);
+      });
+      put(lx, BASE, s, LOOKS.dude, Math.floor(t * 16));
+      if (rear > W + 10) return endRace();
+      requestAnimationFrame(tick);
+    }
+
+    // Logo: resolve from big pixels, then glide into the nav bar
     const cv = document.getElementById("intro-logo");
+    const navLogo = document.querySelector(".nav__brand img");
     const g = cv.getContext("2d");
     const tmp = document.createElement("canvas"), tg = tmp.getContext("2d");
     const img = new Image();
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    const W = Math.round(Math.min(420, innerWidth * 0.72)), H = Math.round((W * 314) / 700);
-    cv.width = W * dpr; cv.height = H * dpr;
-    cv.style.width = `${W}px`; cv.style.height = `${H}px`;
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      try { sessionStorage.setItem("bcnr-intro", "1"); } catch {}
-      intro.classList.add("is-out");
-      setTimeout(() => { intro.remove(); document.documentElement.classList.remove("has-intro"); }, 650);
-    };
+    const LW = Math.round(Math.min(420, innerWidth * 0.72)), LH = Math.round((LW * 314) / 700);
+    cv.width = LW * dpr; cv.height = LH * dpr;
+    cv.style.width = `${LW}px`; cv.style.height = `${LH}px`;
     const pixelate = (block) => {
+      if (!img.complete || !img.naturalWidth) return;
       g.clearRect(0, 0, cv.width, cv.height);
       if (block <= 1) { g.imageSmoothingEnabled = true; g.drawImage(img, 0, 0, cv.width, cv.height); return; }
-      tmp.width = Math.max(1, Math.round(W / block));
-      tmp.height = Math.max(1, Math.round(H / block));
+      tmp.width = Math.max(1, Math.round(LW / block));
+      tmp.height = Math.max(1, Math.round(LH / block));
       tg.drawImage(img, 0, 0, tmp.width, tmp.height);
       g.imageSmoothingEnabled = false;
       g.drawImage(tmp, 0, 0, cv.width, cv.height);
     };
-    const run = () => {
-      [56, 32, 18, 11, 7, 4, 2, 1].forEach((b, i) => setTimeout(() => pixelate(b), 150 + i * 105));
+    let steps = [];
+    img.onload = () => {
+      steps = [56, 32, 18, 11, 7, 4, 2, 1].map((b, i) => setTimeout(() => pixelate(b), 120 + i * 105));
       intro.classList.add("is-go");
-      setTimeout(finish, 2000);
     };
-    img.onload = run;
-    img.onerror = finish;
     img.src = "assets/img/logo.png";
-    intro.addEventListener("click", finish);
-    addEventListener("keydown", finish, { once: true });
+
+    function startTransition() {
+      if (transitioning) return;
+      transitioning = true;
+      tTrans = Math.min(tTrans, clock());
+      steps.forEach(clearTimeout);
+      pixelate(1);
+      try { sessionStorage.setItem("bcnr-intro", "1"); } catch {}
+      if (navLogo) {
+        const a = cv.getBoundingClientRect(), b = navLogo.getBoundingClientRect();
+        cv.style.transformOrigin = "0 0";
+        cv.style.transition = `transform ${T_DUR}s cubic-bezier(.65, 0, .35, 1)`;
+        cv.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width})`;
+      }
+      intro.classList.add("is-out");
+      setTimeout(() => {
+        root.classList.remove("has-intro"); // reveals the real nav logo under the flown one
+        intro.remove();
+      }, T_DUR * 1000 + 60);
+    }
+    const skip = () => startTransition();
+    intro.addEventListener("click", skip);
+    addEventListener("keydown", skip, { once: true });
+    setTimeout(() => { if (!finished) endRace(); }, 12000); // safety net
+    requestAnimationFrame(tick);
   }
 
   window.BCNPixels = {

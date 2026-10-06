@@ -421,32 +421,27 @@ tbody tr:hover { background: var(--paper); }
 .convo b { display: inline-block; min-width: 5.6em; font: 500 .62rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--royal); }
 .section--navy .convo b, .toast .convo b, .footer .convo b { color: var(--white); }
 
-/* logo intro */
-.intro { display: none; }
-html.has-intro .intro { position: fixed; inset: 0; z-index: 3000; display: grid; place-content: center; justify-items: center; gap: 1.1rem; background: var(--navy); color: var(--sky); cursor: pointer; animation: intro-failsafe .01s 5s forwards; }
-html.has-intro .intro::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(47, 67, 166, .45), transparent 60%); }
-.intro__logo, .intro__tag, .intro__road { position: relative; }
+/* logo intro (pixels.js): full-screen, then fades into the page */
+.intro, .race { display: none; }
+html.has-intro .intro { position: fixed; inset: 0; z-index: 3000; display: grid; place-content: center; justify-items: center; gap: 1.1rem; color: var(--sky); cursor: pointer; animation: intro-failsafe .01s 6s forwards; }
+.intro__bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(47, 67, 166, .45), transparent 60%), var(--navy); transition: opacity 1s cubic-bezier(.65, 0, .35, 1); }
+.intro__logo, .intro__tag { position: relative; will-change: transform; }
 .intro__tag { font: 500 .78rem var(--mono); letter-spacing: .3em; text-transform: uppercase; opacity: 0; }
-.intro.is-go .intro__tag { animation: intro-blink .5s steps(1) 1s forwards; }
-.intro__road { position: absolute !important; left: 0; right: 0; bottom: 22px; height: 3px; background: repeating-linear-gradient(90deg, rgba(169, 203, 232, .35) 0 12px, transparent 12px 24px); }
-.intro__skip { position: absolute; top: 1.4rem; left: 0; right: 0; text-align: center; font: .62rem var(--mono); letter-spacing: .2em; text-transform: uppercase; color: rgba(169, 203, 232, .5); }
-.intro.is-out { animation: intro-out .55s steps(9) forwards; pointer-events: none; }
+.intro.is-go .intro__tag { animation: intro-blink .5s steps(1) .9s forwards; }
+.intro__road { position: absolute; left: 0; right: 0; bottom: 24px; height: 3px; background: repeating-linear-gradient(90deg, rgba(169, 203, 232, .35) 0 12px, transparent 12px 24px); transition: opacity .5s; }
+.intro__skip { position: absolute; top: 1.4rem; left: 0; right: 0; text-align: center; font: .62rem var(--mono); letter-spacing: .2em; text-transform: uppercase; color: rgba(169, 203, 232, .5); transition: opacity .3s; }
+.intro.is-out { pointer-events: none; cursor: auto; }
+.intro.is-out .intro__bg { opacity: 0; }
+.intro.is-out .intro__skip, .intro.is-out .intro__road { opacity: 0; transition: opacity .35s; }
+.intro.is-out .intro__tag { animation: intro-fade .3s forwards; }
+@keyframes intro-fade { from { opacity: 1; } to { opacity: 0; } }
+html.has-intro .nav__brand img { opacity: 0; animation: logo-failsafe .01s 6s forwards; }
+/* riders: one canvas strip along the bottom, above the intro, ignores clicks */
+html.has-intro .race, html.race-on .race { display: block; position: fixed; left: 0; bottom: 0; z-index: 3001; pointer-events: none; image-rendering: pixelated; filter: drop-shadow(2px 0 0 #0f1a2e) drop-shadow(-2px 0 0 #0f1a2e) drop-shadow(0 2px 0 #0f1a2e) drop-shadow(0 -2px 0 #0f1a2e); animation: intro-failsafe .01s 13s forwards; }
+html.race-on .pxduo { visibility: hidden; } /* the hero Dude & Walter wait until the race has passed */
 @keyframes intro-blink { 0% { opacity: 1; } 20% { opacity: 0; } 40%, 100% { opacity: 1; } }
-/* breakaway riders: sit above the intro, carry on over the page once it lifts */
-.race { display: none; }
-html.has-intro .race, .race.is-go { display: block; position: fixed; left: 0; right: 0; bottom: 24px; height: 130px; z-index: 3001; pointer-events: none; overflow: hidden; animation: intro-failsafe .01s 9s forwards; }
-.race__lead { position: absolute; left: 0; bottom: 0; transform: translateX(-160px); }
-.race__pack { position: absolute; left: 0; bottom: 0; height: 100%; transform: translateX(-520px); }
-.race__pack canvas { position: absolute; }
-/* 1-sprite-pixel dark outline so riders read over any background */
-.race canvas { filter: drop-shadow(3px 0 0 #0f1a2e) drop-shadow(-3px 0 0 #0f1a2e) drop-shadow(0 3px 0 #0f1a2e) drop-shadow(0 -3px 0 #0f1a2e); }
-.race__pack canvas { filter: drop-shadow(2px 0 0 #0f1a2e) drop-shadow(-2px 0 0 #0f1a2e) drop-shadow(0 2px 0 #0f1a2e) drop-shadow(0 -2px 0 #0f1a2e); }
-.race.is-go .race__lead { animation: race-lead 4.2s linear .3s forwards; }
-.race.is-go .race__pack { animation: race-pack 3.7s linear 1.15s forwards; }
-@keyframes race-lead { from { transform: translateX(-160px); } to { transform: translateX(calc(100vw + 40px)); } }
-@keyframes race-pack { from { transform: translateX(-520px); } to { transform: translateX(calc(100vw + 40px)); } }
-@keyframes intro-out { to { clip-path: inset(0 0 100% 0); } }
 @keyframes intro-failsafe { to { visibility: hidden; pointer-events: none; } }
+@keyframes logo-failsafe { to { opacity: 1; } }
 .pxbubble::after { content: ""; position: absolute; left: 8px; bottom: -9px; width: 6px; height: 6px; background: var(--navy); box-shadow: -6px 6px 0 var(--navy); }
 .pxbubble.is-flip { left: auto; right: 36px; transform-origin: bottom right; }
 .pxbubble.is-flip::after { left: auto; right: 8px; box-shadow: 6px 6px 0 var(--navy); }
