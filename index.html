@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -274,9 +275,7 @@
     <div class="wrap">
       <span class="eyebrow eyebrow--light">Ride with GPS · club routes</span>
       <h2>Where we ride.</h2>
-      <p class="sub sub--light">Every BCN Riders route lives in our Ride with GPS club. Members get voice navigation, offline maps and PDF cue sheets on all of them.</p>
-
-      <div class="featured" id="featured"></div>
+      <p class="sub sub--light">Every BCN Riders route lives in our Ride with GPS club. Tap a line on the map to see the route, then open it in Ride with GPS for voice navigation, offline maps and cue sheets.</p>
 
       <div class="library">
         <div class="library__bar">
@@ -294,6 +293,36 @@
             <option value="climb">Most climbing</option>
           </select>
         </div>
+
+        <div class="clubmap">
+          <div class="clubmap__map" id="clubmap" role="region" aria-label="Map of club routes"></div>
+          <div class="clubmap__tools">
+            <button class="clubmap__filter" id="map-filter-btn" aria-expanded="false" aria-controls="map-filters">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Filters<b></b>
+            </button>
+            <span class="clubmap__count" id="map-count" aria-live="polite"></span>
+            <div class="mapfilters" id="map-filters" hidden>
+              <span class="mapfilters__label">Type</span>
+              <div class="chips chips--map" role="group" aria-label="Filter by type">
+                <button class="chip is-on" data-kind="all">All</button>
+                <button class="chip" data-kind="road">Road</button>
+                <button class="chip" data-kind="gravel">Gravel</button>
+                <button class="chip" data-kind="mtb">MTB</button>
+              </div>
+              <span class="mapfilters__label">Distance</span>
+              <div class="chips chips--map" role="group" aria-label="Filter by distance">
+                <button class="chip is-on" data-dist="any">Any</button>
+                <button class="chip" data-dist="short">Under 60 km</button>
+                <button class="chip" data-dist="mid">60–100 km</button>
+                <button class="chip" data-dist="long">100 km+</button>
+              </div>
+              <button class="mapfilters__reset" id="map-filters-reset">Reset</button>
+            </div>
+          </div>
+          <aside class="routecard" id="route-card" hidden aria-live="polite"></aside>
+        </div>
+
         <p class="library__count" id="route-count"></p>
         <div class="routes" id="route-list"></div>
         <button class="btn btn--ghost btn--block" id="route-more" hidden>Show more routes</button>
@@ -347,6 +376,14 @@
   </div>
 </footer>
 
+<dialog class="lightbox" id="lightbox" aria-label="Kit photo">
+  <button class="lightbox__close" data-lb="close" aria-label="Close">×</button>
+  <button class="lightbox__nav lightbox__nav--prev" data-lb="prev" aria-label="Previous photo">‹</button>
+  <figure><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption></figure>
+  <button class="lightbox__nav lightbox__nav--next" data-lb="next" aria-label="Next photo">›</button>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data/routes.js"></script>
 <script src="assets/js/app.js"></script>
 </body>

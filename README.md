@@ -1,7 +1,7 @@
 # BCN Riders · 2027 membership site
 
 Static site for the BCN Riders (Barcelona Cycling Network) 2027 membership renewal drive:
-kit tiers, an order form that hands off to Revolut checkout, a size guide, and the club's
+kit tiers, an order form that hands off to Revolut checkout, a size guide, and a map of the club's
 Ride with GPS routes.
 
 ## Run locally
@@ -37,7 +37,18 @@ Routes come from the [Ride with GPS club](https://ridewithgps.com/organizations/
 python3 scripts/update_routes.py
 ```
 
-This rewrites `data/routes.js`. Featured map embeds are set by `FEATURED` in that script.
+This rewrites `data/routes.js` with every public club route: stats, surface, a simplified line
+(Douglas-Peucker, 25 m, stored as an encoded polyline) and a 120-point elevation profile. Route
+JSON is cached in `scripts/.cache/` (gitignored) keyed by each route's `updated_at`, so re-runs
+only fetch what changed; add `--fresh` to refetch everything. It fetches 3 routes at a time and
+retries dropped connections; if any route still fails, `data/routes.js` is left untouched.
+Only route fields are kept, never owner names or other personal details.
+
+The club map draws the routes with Leaflet over [OpenTopoMap](https://opentopomap.org) tiles
+(CC-BY-SA, attribution shown on the map, no API key). Route photos load from
+`https://ridewithgps.com/photos/{highlighted_photo_id}/medium.jpg`; set a highlighted photo on
+a route in Ride with GPS and re-run the script to show it. `FEATURED` in the script pins routes
+to the top of the list and `DEFAULT_ROUTE` is the route opened on desktop at page load.
 
 ## Assets
 
