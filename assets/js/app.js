@@ -118,6 +118,7 @@
 
   function flashToast() {
     toast.hidden = false;
+    window.BCNPixels?.strike();
     toast.animate?.([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 220 });
   }
 
@@ -445,7 +446,8 @@
             <a href="${rwgps(r.id)}" target="_blank" rel="noopener" aria-label="Open ${esc(title(r))} on Ride with GPS">RWGPS ↗</a>
           </div>
         </article>`).join("")
-      : `<p class="routes__empty">No routes match that. Try another search or filter.</p>`;
+      : `<p class="routes__empty"><span class="routes__quip">“Yeah, well, that's just, like, your opinion, man.”</span>No routes match that. Try another search or filter.</p>`;
+    $("#route-quip").hidden = sort !== "climb" || !all.length;
     moreBtn.hidden = all.length <= shown;
     renderMap(all, { fit });
   }

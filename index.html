@@ -60,6 +60,12 @@
         <img class="hero__beach" src="assets/img/beach-light.png" alt="" aria-hidden="true">
       </div>
     </div>
+    <div class="pxroad">
+      <button class="pxrider" type="button" aria-label="Click the rider for a Big Lebowski quote">
+        <span class="pxbubble" aria-hidden="true"></span>
+        <canvas class="px" id="px-rider" aria-hidden="true"></canvas>
+      </button>
+    </div>
   </section>
 
   <!-- TIERS -->
@@ -177,6 +183,8 @@
         <p class="order__fine" id="pay-note">Secure checkout by Revolut. Paid to Guava Bikes, who handle the club's bulk order.</p>
 
         <div class="toast" id="toast" role="status" hidden>
+          <canvas class="px toast__px" id="px-strike" aria-hidden="true"></canvas>
+          <span class="toast__quote">“The Dude abides.”</span>
           <b>Copied ✓</b> In Revolut, paste into <em>"2027 BCN Riders team kit and membership!"</em> and then tap <em>Continue to checkout</em>.
         </div>
       </form>
@@ -205,6 +213,10 @@
       <span class="eyebrow">Size guide</span>
       <h2>Find your size before you order.</h2>
       <p class="sub">All measurements are body measurements in centimetres. Go by your measurements, not your usual size in other brands. Pro and Sport jerseys share one chart; the wind vest uses your jersey size.</p>
+      <p class="pxquote">
+        <canvas class="px" id="px-pin" aria-hidden="true"></canvas>
+        <span>“This is not ’Nam. This is bowling. There are rules.”<small>Same goes for sizing. Measure first, then pick.</small></span>
+      </p>
 
       <div class="tabs" role="tablist">
         <button role="tab" aria-selected="true" data-tab="jersey">Jersey &amp; vest</button>
@@ -272,6 +284,7 @@
 
   <!-- ROUTES -->
   <section class="section section--navy" id="routes">
+    <div class="pxweed" aria-hidden="true"><canvas class="px" id="px-weed"></canvas></div>
     <div class="wrap">
       <span class="eyebrow eyebrow--light">Ride with GPS · club routes</span>
       <h2>Where we ride.</h2>
@@ -324,6 +337,7 @@
         </div>
 
         <p class="library__count" id="route-count"></p>
+        <p class="library__quip" id="route-quip" hidden>“Sometimes you eat the bar, and sometimes, well, he eats you.”</p>
         <div class="routes" id="route-list"></div>
         <button class="btn btn--ghost btn--block" id="route-more" hidden>Show more routes</button>
       </div>
@@ -372,6 +386,10 @@
   <div class="wrap footer__inner">
     <img src="assets/img/logo.png" alt="BCN Riders">
     <p>Barcelona · Girona · since 2022</p>
+    <div class="footer__dude">
+      <canvas class="px" id="px-russian" aria-hidden="true"></canvas>
+      <p>“Careful, man, there’s a beverage here!”<small>Quotes from The Big Lebowski (1998)</small></p>
+    </div>
     <p><a href="https://ridewithgps.com/organizations/8423-barcelona-cycling-network" target="_blank" rel="noopener">Ride with GPS club</a> · Kit by Obbi, made in Italy</p>
   </div>
 </footer>
@@ -385,6 +403,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data/routes.js"></script>
+<script src="assets/js/pixels.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
