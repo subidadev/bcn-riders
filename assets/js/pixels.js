@@ -233,10 +233,11 @@
   // Hero: the Dude and Walter ride together and talk. Click them for the next exchange.
   // Mostly original lines in their voices; the film's own lines are kept short.
   const EXCHANGES = [
-    [["walter", "Membership starts January first. That's not a guideline, Dude. That's a date."],
-     ["dude", "Yeah, I'm just gonna, like, coast till then, man."]],
+    [["walter", "You want to be in the club, Dude? You wear the kit."],
+     ["dude", "And if I don't, man?"],
+     ["walter", "Beach socks."]],
     [["dude", "The Dude abides."],
-     ["walter", "And the Dude renews. Before the cut-off. Am I wrong?"],
+     ["walter", "The Dude abides in the kit. Am I wrong?"],
      ["dude", "You're not wrong, Walter."]],
     [["walter", "You pick your size off the chart. Not off a feeling."],
      ["dude", "Yeah, well, that's just, like, your opinion, man."]],
