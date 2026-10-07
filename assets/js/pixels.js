@@ -1,7 +1,7 @@
 /* BCN Riders · pixel-art animations.
    Each sprite is a tiny canvas drawn pixel by pixel, then scaled up with
    image-rendering: pixelated. Sprites only redraw while on screen, and everything
-   holds still for prefers-reduced-motion. Quotes: The Big Lebowski (1998). */
+   holds still for prefers-reduced-motion. */
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const C = {
@@ -76,8 +76,7 @@
   reduce.addEventListener?.("change", () => actors.forEach((a) => paint(a, reduce.matches ? a.still : a.frame)));
 
   // ---- Sprites -------------------------------------------------------------
-  // Riders, pedalling. 8 frames per crank turn. The Dude wears the sky wind vest;
-  // Walter rides in khaki with a beard and amber shooting glasses.
+  // Riders, pedalling. 8 frames per crank turn. The lead rider wears the sky wind vest.
   const LOOKS = {
     // Peloton kits
     red:    { vest: "#d6453d", vest2: "#e8736b", logo: C.white, sleeve: "#a8322b", shorts: C.ink, shortsFar: "#000", shades: C.ink },
@@ -85,10 +84,10 @@
     white:  { vest: C.white, vest2: C.sky3, logo: C.royal, sleeve: C.sky2, shorts: C.royal, shortsFar: "#22328a", shades: C.ink },
     green:  { vest: "#4f9a5a", vest2: "#7cbf86", logo: C.white, sleeve: "#3a7744", shorts: C.ink, shortsFar: "#000", shades: C.ink },
     royal:  { vest: C.royal, vest2: "#5a6fd0", logo: C.sky, sleeve: "#22328a", shorts: C.ink, shortsFar: "#000", shades: C.ink },
-    dude:   { vest: C.sky, vest2: C.sky2, logo: C.royal, sleeve: C.navy, shorts: "#4a63e0", shortsFar: "#2c3f9e", shades: C.ink, hair: "#7a5230", beard: null, goatee: "#7a5230" },
-    walter: { vest: "#b8ab6c", vest2: "#d4c98f", logo: "#6b6a3f", sleeve: "#6b6a3f", shorts: "#9aa3b5", shortsFar: "#6f7889", shades: "#e0a030", hair: null, beard: "#3b2a1e", goatee: null },
+    orange: { vest: "#e8833a", vest2: "#f2a76c", logo: C.white, sleeve: "#b8642a", shorts: C.ink, shortsFar: "#000", shades: C.ink },
+    club:   { vest: C.sky, vest2: C.sky2, logo: C.royal, sleeve: C.navy, shorts: "#4a63e0", shortsFar: "#2c3f9e", shades: C.ink },
   };
-  function drawRider(s, f, look = LOOKS.dude) {
+  function drawRider(s, f, look = LOOKS.club) {
     const t = ((f % 8) / 8) * Math.PI * 2;
     const R = [7, 18], F = [26, 18], B = [15, 18], S = [13, 10], H = [23, 10], hip = [13, 8], L = 6;
     const wheel = ([cx, cy]) => {
@@ -130,9 +129,6 @@
     s.px(24, 1, C.sky);
     s.rect(22, 2, 2, 2, C.skin);                        // face
     s.px(23, 2, look.shades);                           // shades
-    if (look.hair) { s.px(20, 2, look.hair); s.px(20, 3, look.hair); s.px(19, 3, look.hair); }
-    if (look.goatee) s.px(23, 3, look.goatee);
-    if (look.beard) { s.rect(21, 3, 3, 1, look.beard); s.px(22, 4, look.beard); }
   }
 
   // Tumbleweed: a seeded scribble, spun a notch per frame.
@@ -151,149 +147,16 @@
     });
   }
 
-  // Small bowling pin for the strike, drawn along a tilt angle (0 = upright).
-  const PIN = [2, 2, 2, 2, 1, 1, 2, 2, 1]; // half-widths, base to top
-  function drawPin(s, x, y, a) {
-    const ux = Math.sin(a), uy = -Math.cos(a), vx = Math.cos(a), vy = Math.sin(a);
-    PIN.forEach((hw, i) => {
-      for (let k = -(hw - 1); k <= hw - 1; k++) {
-        s.px(x + ux * i + vx * k, y + uy * i + vy * k, i === 5 ? C.red : C.white);
-      }
-    });
-  }
-  const PINS = [ // x, launch vx, vy, spin
-    [47, 0.7, -1.7, 0.35], [51, 1.0, -2.3, -0.4], [55, 1.3, -1.4, 0.5], [59, 1.6, -2.0, -0.3],
-  ];
-  function drawStrike(s, f) {
-    f = Math.min(f, 60);
-    for (let x = 0; x < 64; x += 4) s.rect(x, 17, 2, 1, C.navy); // lane
-    const hit = 22;
-    const bx = f <= hit ? 4 + f * 1.9 : 46 + (f - hit) * 1.4;
-    if (bx < 70) {
-      s.disc(bx, 13, 3, C.royal);
-      const a = f * 0.7;
-      s.px(bx + Math.cos(a) * 1.5, 13 + Math.sin(a) * 1.5, C.ink);
-      s.px(bx + Math.cos(a + 0.9) * 1.5, 13 + Math.sin(a + 0.9) * 1.5, C.ink);
-    }
-    PINS.forEach(([x0, vx, vy, spin]) => {
-      if (f <= hit) return drawPin(s, x0, 17, 0);
-      const t = f - hit;
-      const y = Math.min(17, 17 + vy * t + 0.125 * t * t);
-      const landed = y >= 17 && t > 2;
-      drawPin(s, x0 + vx * t, y, landed ? Math.PI / 2 * Math.sign(spin || 1) : spin * t);
-    });
-  }
-
-  // Big wobbling pin for the size guide. Rows are half-widths, top to base.
-  const BIGPIN = [1, 2, 2, 2, 1, 1, 1, 2, 3, 3, 4, 4, 4, 3, 3, 2];
-  function drawBigPin(s, f) {
-    const tilt = Math.sin(f * 0.55) * 2;
-    const n = BIGPIN.length;
-    BIGPIN.forEach((hw, i) => {
-      const cx = 6 + Math.round(tilt * (n - 1 - i) / (n - 1));
-      const y = i + 1;
-      s.rect(cx - hw - 1, y, 2 * hw + 3, 1, C.navy);
-      if (i === 0) s.rect(cx - hw, y - 1, 2 * hw + 1, 1, C.navy);
-      if (i === n - 1) s.rect(cx - hw, y + 1, 2 * hw + 1, 1, C.navy);
-    });
-    BIGPIN.forEach((hw, i) => {
-      const cx = 6 + Math.round(tilt * (n - 1 - i) / (n - 1));
-      s.rect(cx - hw, i + 1, 2 * hw + 1, 1, i === 5 || i === 6 ? C.red : C.white);
-    });
-  }
-
-  // White Russian on the rocks: Kahlúa swirling up into the cream, ice bobbing.
-  function drawRussian(s, f) {
-    for (let y = 8; y <= 17; y++) {
-      const xl = 3 + Math.floor((y - 5) / 7), xr = 14 - Math.floor((y - 5) / 7);
-      for (let x = xl; x <= xr; x++) {
-        const edge = 13.5 + Math.sin(x * 0.8 + f * 0.6) * 1.6 + Math.sin(x * 0.3 - f * 0.35);
-        const c = y < edge - 0.8 ? C.cream : y > edge + 0.8 ? C.kahlua : C.swirl;
-        s.px(x, y, c);
-      }
-    }
-    const bob = f % 4 < 2 ? 0 : 1;
-    s.rect(5, 6 + bob, 3, 3, C.sky3); s.px(5, 6 + bob, C.white);
-    s.rect(9, 7 - bob, 3, 3, C.sky3); s.px(9, 7 - bob, C.white);
-    s.line(2, 5, 3, 19, C.sky2);   // glass
-    s.line(15, 5, 14, 19, C.sky2);
-    s.line(3, 19, 14, 19, C.sky2);
-    s.line(4, 18, 13, 18, C.sky2);
-    if (f % 6 < 3) s.px(13, 6, C.white); // glint
-  }
-
   // ---- Mount ---------------------------------------------------------------
-  actor("px-rider", { w: 34, h: 25, scale: 4, fps: 12, draw: (s, f) => drawRider(s, f, LOOKS.dude) });
-  actor("px-walter", { w: 34, h: 25, scale: 4, fps: 12, draw: (s, f) => drawRider(s, f + 3, LOOKS.walter) });
+  actor("px-rider", { w: 34, h: 25, scale: 4, fps: 12, draw: (s, f) => drawRider(s, f, LOOKS.club) });
   actor("px-weed", { w: 19, h: 19, scale: 3, fps: 12, draw: drawWeed });
-  actor("px-pin", { w: 13, h: 18, scale: 3, fps: 8, draw: drawBigPin });
-  actor("px-russian", { w: 18, h: 20, scale: 3, fps: 6, draw: drawRussian });
-  const strike = actor("px-strike", { w: 64, h: 18, scale: 3, fps: 24, draw: drawStrike, still: 60 });
-
-  // Hero: the Dude and Walter ride together and talk. Click them for the next exchange.
-  // Mostly original lines in their voices; the film's own lines are kept short.
-  const EXCHANGES = [
-    [["walter", "You want to be in the club, Dude? You wear the kit."],
-     ["dude", "And if I don't, man?"],
-     ["walter", "Beach socks."]],
-    [["dude", "The Dude abides."],
-     ["walter", "The Dude abides in the kit. Am I wrong?"],
-     ["dude", "You're not wrong, Walter."]],
-    [["walter", "You pick your size off the chart. Not off a feeling."],
-     ["dude", "Yeah, well, that's just, like, your opinion, man."]],
-    [["walter", "You ride over the line, that's a foul. Mark it zero!"],
-     ["dude", "It's a group ride, man."]],
-    [["dude", "This kit really ties the club together, man."],
-     ["walter", "Like the rug, Dude. Like the rug."]],
-    [["dude", "Walter, I just wanna ride, man."],
-     ["walter", "Shut the f*ck up, Donny."],
-     ["dude", "Donny's not even here, man."]],
-    [["walter", "Am I the only one around here who gives a sh*t about the rules?"],
-     ["dude", "Yeah, man. Pretty much."]],
-  ];
-  const duo = document.querySelector(".pxduo");
-  const bubbles = {
-    dude: document.querySelector(".pxrider--dude .pxbubble"),
-    walter: document.querySelector(".pxrider--walter .pxbubble"),
-  };
-  const STEP = 2700;
-  let ex = 0, timers = [], talking = false, heroOnScreen = true;
-  function show(who, text) {
-    Object.values(bubbles).forEach((b) => b?.classList.remove("is-on"));
-    const b = bubbles[who];
-    if (!b) return;
-    const r = b.parentElement.getBoundingClientRect();
-    b.classList.toggle("is-flip", r.left > innerWidth - 270);
-    b.innerHTML = `<b>${who === "dude" ? "The Dude" : "Walter"}</b>`;
-    b.append(text);
-    b.classList.add("is-on");
-  }
-  function converse() {
-    timers.forEach(clearTimeout);
-    const lines = EXCHANGES[ex++ % EXCHANGES.length];
-    talking = true;
-    timers = lines.map(([who, text], i) => setTimeout(() => show(who, text), i * STEP));
-    timers.push(setTimeout(() => {
-      Object.values(bubbles).forEach((b) => b?.classList.remove("is-on"));
-      talking = false;
-    }, lines.length * STEP));
-  }
-  if (duo) {
-    duo.addEventListener("click", converse);
-    if (io) new IntersectionObserver(([e]) => (heroOnScreen = e.isIntersecting)).observe(duo.parentElement);
-    setInterval(() => {
-      if (reduce.matches || !heroOnScreen || talking) return;
-      const r = duo.getBoundingClientRect();
-      if (r.left > 20 && r.right < innerWidth - 20) converse();
-    }, 6000);
-  }
 
   // ---- Intro ---------------------------------------------------------------
-  // 1. Full-screen: the logo resolves out of big pixels while a large Dude rides
+  // 1. Full-screen: the logo resolves out of big pixels while a large rider rides
   //    along the bottom and the peloton chases in.
   // 2. Transition: the navy screen fades away, the logo glides into the nav bar,
   //    and the riders shrink smoothly onto the page.
-  // 3. The small Dude and the chasing bunch ride on across the site, then leave.
+  // 3. The small lead rider and the chasing bunch ride on across the site, then leave.
   const intro = document.getElementById("intro");
   const raceCv = document.getElementById("race");
   if (intro && raceCv && document.documentElement.classList.contains("has-intro")) {
@@ -331,7 +194,7 @@
     // [kit, position in the bunch (0 = rearmost), lift (further back in the road)]
     const BUNCH = [
       ["yellow", 0.62, 16], ["green", 1.75, 18], ["white", 2.85, 14],
-      ["red", 0, 2], ["royal", 1.1, 0], ["walter", 2.2, 4], ["white", 3.25, 0],
+      ["red", 0, 2], ["royal", 1.1, 0], ["orange", 2.2, 4], ["white", 3.25, 0],
     ];
     function put(x, base, s, look, f) {
       if (x > W || x + 34 * s < 0) return;
@@ -365,7 +228,7 @@
         rear = Math.min(rear, x);
         put(x, BASE - lift * (s / 3), s, LOOKS[kit], Math.floor(t * 14) + i * 3);
       });
-      put(lx, BASE, s, LOOKS.dude, Math.floor(t * 16));
+      put(lx, BASE, s, LOOKS.club, Math.floor(t * 16));
       if (rear > W + 10) return endRace();
       requestAnimationFrame(tick);
     }
@@ -430,7 +293,4 @@
     });
   }
 
-  window.BCNPixels = {
-    strike() { if (strike) { strike.frame = 0; paint(strike, reduce.matches ? strike.still : 0); } },
-  };
 })();

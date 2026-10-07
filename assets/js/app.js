@@ -86,7 +86,7 @@
       payBtn.textContent = `€${t.price} payment link coming soon`;
       payBtn.setAttribute("aria-disabled", "true");
       payBtn.removeAttribute("href");
-      payNote.textContent = "The socks-only checkout isn't live yet. Check back soon, or ask in the group. (Walter: “You don't rush socks, Dude.”)";
+      payNote.textContent = "The socks-only checkout isn't live yet. Check back soon, or ask in the group.";
     } else {
       payBtn.textContent = `Copy & pay €${t.price} on Revolut →`;
       payBtn.removeAttribute("aria-disabled");
@@ -126,7 +126,6 @@
 
   function flashToast() {
     toast.hidden = false;
-    window.BCNPixels?.strike();
     toast.animate?.([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 220 });
   }
 
@@ -454,11 +453,7 @@
             <a href="${rwgps(r.id)}" target="_blank" rel="noopener" aria-label="Open ${esc(title(r))} on Ride with GPS">RWGPS ↗</a>
           </div>
         </article>`).join("")
-      : `<div class="routes__empty">
-          <p class="convo routes__quip"><span><b>The Dude</b> There's no route there, man.</span><span><b>Walter</b> Then we build one. Nobody f*cks with this club's routes.</span></p>
-          No routes match that. Try another search or filter.
-        </div>`;
-    $("#route-quip").hidden = sort !== "climb" || !all.length;
+      : `<p class="routes__empty">No routes match that. Try another search or filter.</p>`;
     moreBtn.hidden = all.length <= shown;
     renderMap(all, { fit });
   }

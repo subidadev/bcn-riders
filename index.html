@@ -6,7 +6,7 @@
   <title>BCN Riders · The 2027 Kit</title>
   <meta name="description" content="Wear the kit, be in the club. The 2027 BCN Riders kit, made in Italy by Obbi, and the routes we ride around Barcelona.">
   <meta property="og:title" content="BCN Riders · Wear the kit">
-  <meta property="og:description" content="The 2027 BCN Riders kit, made in Italy by Obbi. Ride in it with the crew, or keep it easy in the beach socks.">
+  <meta property="og:description" content="The 2027 BCN Riders kit, made in Italy by Obbi. Full kit or beach socks, you're in the crew.">
   <meta property="og:image" content="https://subidadev.github.io/bcn-riders/assets/img/jersey-back.jpg">
   <meta property="og:image:width" content="900">
   <meta property="og:image:height" content="1070">
@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="assets/css/styles.css?v=98382548">
+  <link rel="stylesheet" href="assets/css/styles.css?v=f7186123">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
       <div class="hero__copy">
         <span class="pill">The 2027 kit</span>
         <h1>Wear the kit.<br><span class="accent">Be in the club.</span></h1>
-        <p class="lead">BCN Riders is the crew you ride with. The kit is how you show it: navy, BCN across the chest, Barcelona and Girona on the sleeves. <strong>Pull it on and you're one of us.</strong></p>
+        <p class="lead">BCN Riders is the crew you ride with. The kit is how you show it, from the full Pro or Sport kit to a pair of beach socks. <strong>Whichever you pick, you're one of us.</strong></p>
         <div class="hero__ctas">
           <a class="btn btn--light" href="#order">Get your kit →</a>
           <a class="btn btn--ghost" href="#routes">Explore club routes</a>
@@ -82,11 +82,8 @@
         <img class="hero__beach" src="assets/img/beach-light.png" alt="" aria-hidden="true">
       </div>
     </div>
-    <div class="pxroad">
-      <button class="pxduo" type="button" aria-label="Click the Dude and Walter for their next exchange">
-        <span class="pxrider pxrider--walter"><span class="pxbubble" aria-hidden="true"></span><canvas class="px" id="px-walter" aria-hidden="true"></canvas></span>
-        <span class="pxrider pxrider--dude"><span class="pxbubble" aria-hidden="true"></span><canvas class="px" id="px-rider" aria-hidden="true"></canvas></span>
-      </button>
+    <div class="pxroad" aria-hidden="true">
+      <span class="pxrider"><canvas class="px" id="px-rider"></canvas></span>
     </div>
   </section>
 
@@ -95,7 +92,7 @@
     <div class="wrap">
       <span class="eyebrow">Three ways in</span>
       <h2>Pick the kit that fits you.</h2>
-      <p class="sub">Pro and Sport are the full kit. Not ready for the whole thing? The beach socks still put you in the crew. Any of them gets you into the 2027 group chat, where the rides happen.</p>
+      <p class="sub">Pro and Sport are the full kit. The beach socks get you in just the same. Any of them puts you in the 2027 group chat, where the rides happen.</p>
 
       <div class="tiers">
         <article class="tier tier--pro" data-tier="pro">
@@ -119,7 +116,7 @@
 
         <article class="tier tier--socks" data-tier="socks">
           <div class="tier__head"><span class="label">Tier 3 · Beach socks</span><span class="tier__price">€30</span></div>
-          <p class="tier__desc"><strong>Still in. Just on the beach.</strong> The BCN Riders beach-club socks and your seat in the group. The kit will be here when you're ready.</p>
+          <p class="tier__desc"><strong>Just as in.</strong> The BCN Riders beach-club socks and your place in the group for 2027, same as everyone in the full kit.</p>
           <ul class="tier__list">
             <li>BCN Riders beach socks</li><li><strong>You're in for 2027</strong></li>
           </ul>
@@ -206,11 +203,6 @@
         <p class="order__fine" id="pay-note">Secure checkout by Revolut. Paid to Guava Bikes, who handle the club's bulk order.</p>
 
         <div class="toast" id="toast" role="status" hidden>
-          <canvas class="px toast__px" id="px-strike" aria-hidden="true"></canvas>
-          <span class="convo toast__convo">
-            <span><b>Walter</b> Paste it in the field. Exactly as written. Am I wrong?</span>
-            <span><b>The Dude</b> You're not wrong, Walter. The Dude abides.</span>
-          </span>
           <b>Copied ✓</b> In Revolut, paste into <em>"2027 BCN Riders team kit and membership!"</em> and then tap <em>Continue to checkout</em>.
         </div>
       </form>
@@ -239,14 +231,6 @@
       <span class="eyebrow">Size guide</span>
       <h2>Find your size before you order.</h2>
       <p class="sub">All measurements are body measurements in centimetres. Go by your measurements, not your usual size in other brands. Pro and Sport jerseys share one chart; the wind vest uses your jersey size.</p>
-      <p class="pxquote">
-        <canvas class="px" id="px-pin" aria-hidden="true"></canvas>
-        <span class="convo">
-          <span><b>Walter</b> You measure your chest. You measure your waist. This is not ’Nam. There are rules.</span>
-          <span><b>The Dude</b> I usually just go by feel, man.</span>
-          <span><b>Walter</b> And how’s that working out for you, Dude?</span>
-        </span>
-      </p>
 
       <div class="tabs" role="tablist">
         <button role="tab" aria-selected="true" data-tab="jersey">Jersey &amp; vest</button>
@@ -367,10 +351,6 @@
         </div>
 
         <p class="library__count" id="route-count"></p>
-        <p class="library__quip convo" id="route-quip" hidden>
-          <span><b>Walter</b> Sixteen hundred metres. I've carried heavier things up worse hills.</span>
-          <span><b>The Dude</b> Sometimes you eat the bar, man.</span>
-        </p>
         <div class="routes" id="route-list"></div>
         <button class="btn btn--ghost btn--block" id="route-more" hidden>Show more routes</button>
       </div>
@@ -406,8 +386,8 @@
     <div class="wrap final__inner">
       <img src="assets/img/beach-navy.png" alt="" aria-hidden="true">
       <div>
-        <h2>See you on the road in the new kit.</h2>
-        <p>Or on the beach, in the socks.</p>
+        <h2>See you on the road.</h2>
+        <p>Full kit or beach socks, you're one of us.</p>
       </div>
       <a class="btn btn--navy btn--lg" href="#order">Get my kit →</a>
     </div>
@@ -419,14 +399,6 @@
   <div class="wrap footer__inner">
     <img src="assets/img/logo.png" alt="BCN Riders">
     <p>Barcelona · Girona · since 2022</p>
-    <div class="footer__dude">
-      <canvas class="px" id="px-russian" aria-hidden="true"></canvas>
-      <p class="convo">
-        <span><b>The Dude</b> Careful, man, there’s a beverage here!</span>
-        <span><b>Walter</b> On a group ride? Has the whole world gone f*cking crazy?</span>
-        <small>With apologies to The Big Lebowski (1998)</small>
-      </p>
-    </div>
     <p><a href="https://ridewithgps.com/organizations/8423-barcelona-cycling-network" target="_blank" rel="noopener">Ride with GPS club</a> · Kit by Obbi, made in Italy</p>
   </div>
 </footer>
@@ -440,7 +412,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data/routes.js?v=8decee8b"></script>
-<script src="assets/js/pixels.js?v=ca512d2e"></script>
-<script src="assets/js/app.js?v=7e7e9c9f"></script>
+<script src="assets/js/pixels.js?v=976097f1"></script>
+<script src="assets/js/app.js?v=9c40a40c"></script>
 </body>
 </html>

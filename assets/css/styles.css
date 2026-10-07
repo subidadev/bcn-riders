@@ -408,21 +408,10 @@ tbody tr:hover { background: var(--paper); }
 .hero { padding-bottom: calc(clamp(3rem, 7vw, 5rem) + 70px); }
 .pxroad { position: absolute; left: 0; right: 0; bottom: 0; height: 100px; pointer-events: none; }
 .pxroad::after { content: ""; position: absolute; left: 0; right: 0; bottom: 12px; height: 3px; background: repeating-linear-gradient(90deg, rgba(169, 203, 232, .35) 0 12px, transparent 12px 24px); }
-.pxduo { position: absolute; left: 0; bottom: 14px; display: flex; align-items: flex-end; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; animation: px-ride 30s linear infinite; }
-.pxduo:hover, .pxduo:focus-visible { animation-play-state: paused; }
-.pxduo:focus-visible { outline: 3px dashed var(--sky); outline-offset: 4px; }
-.pxrider { position: relative; display: block; }
-@keyframes px-ride { from { transform: translateX(-300px); } to { transform: translateX(calc(100vw + 20px)); } }
-.pxbubble { position: absolute; bottom: calc(100% + 14px); left: 36px; width: max-content; max-width: 230px; background: var(--white); color: var(--navy); font: 500 .72rem/1.4 var(--mono); text-align: left; padding: .6em .8em; border: 3px solid var(--navy); box-shadow: 4px 4px 0 var(--sky); opacity: 0; transform: translateY(6px) scale(.9); transform-origin: bottom left; transition: opacity .2s steps(3), transform .2s steps(3); pointer-events: none; }
-.pxbubble.is-on { opacity: 1; transform: none; }
-.pxbubble b { display: block; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--royal); margin-bottom: .15rem; }
-.pxrider--walter .pxbubble { box-shadow: 4px 4px 0 #d4c98f; }
-.pxrider--walter .pxbubble b { color: #6b6a3f; }
+.pxrider { position: absolute; left: 0; bottom: 14px; pointer-events: none; animation: px-ride 24s linear infinite; }
+html.race-on .pxrider { visibility: hidden; } /* the hero rider waits until the intro race has passed */
+@keyframes px-ride { from { transform: translateX(-160px); } to { transform: translateX(calc(100vw + 20px)); } }
 
-/* Dude & Walter exchanges */
-.convo { display: grid; gap: .3rem; }
-.convo b { display: inline-block; min-width: 5.6em; font: 500 .62rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--royal); }
-.section--navy .convo b, .toast .convo b, .footer .convo b { color: var(--white); }
 
 /* logo intro (pixels.js): full-screen, then fades into the page */
 .intro, .race { display: none; }
@@ -441,41 +430,25 @@ html.has-intro .intro { position: fixed; inset: 0; z-index: 3000; display: grid;
 html.has-intro .nav__brand img { opacity: 0; animation: logo-failsafe .01s 6s forwards; }
 /* riders: one canvas strip along the bottom, above the intro, ignores clicks */
 html.has-intro .race, html.race-on .race { display: block; position: fixed; left: 0; bottom: 0; z-index: 3001; pointer-events: none; image-rendering: pixelated; filter: drop-shadow(2px 0 0 #0f1a2e) drop-shadow(-2px 0 0 #0f1a2e) drop-shadow(0 2px 0 #0f1a2e) drop-shadow(0 -2px 0 #0f1a2e); animation: intro-failsafe .01s 13s forwards; }
-html.race-on .pxduo { visibility: hidden; } /* the hero Dude & Walter wait until the race has passed */
 @keyframes intro-blink { 0% { opacity: 1; } 20% { opacity: 0; } 40%, 100% { opacity: 1; } }
 @keyframes intro-failsafe { to { visibility: hidden; pointer-events: none; } }
 @keyframes logo-failsafe { to { opacity: 1; } }
-.pxbubble::after { content: ""; position: absolute; left: 8px; bottom: -9px; width: 6px; height: 6px; background: var(--navy); box-shadow: -6px 6px 0 var(--navy); }
-.pxbubble.is-flip { left: auto; right: 36px; transform-origin: bottom right; }
-.pxbubble.is-flip::after { left: auto; right: 8px; box-shadow: 6px 6px 0 var(--navy); }
 
 #routes { position: relative; overflow: hidden; }
 .pxweed { position: absolute; left: 0; top: clamp(2.2rem, 5vw, 3.6rem); pointer-events: none; animation: px-weed-x 30s linear 3s infinite backwards; }
 .pxweed canvas { animation: px-hop .7s infinite; }
 @keyframes px-weed-x { 0% { transform: translateX(-80px); } 38%, 100% { transform: translateX(calc(100vw + 40px)); } }
 @keyframes px-hop { 0%, 100% { transform: translateY(0); animation-timing-function: ease-out; } 50% { transform: translateY(-26px); animation-timing-function: ease-in; } }
-.library__quip { font: 500 .74rem/1.5 var(--mono); color: var(--sky-2); margin: -.6rem 0 1rem; }
-.routes__quip { font: 500 .78rem/1.5 var(--mono); color: var(--sky); margin: 0 0 .8rem; }
 
-.toast__px { margin-bottom: .5rem; }
-.toast__convo { font: 500 .72rem/1.5 var(--mono); color: var(--sky-2); margin-bottom: .6rem; }
 
-.pxquote { display: flex; align-items: center; gap: 1rem; max-width: 640px; margin: 1.4rem 0 0; padding: .9rem 1.1rem; background: var(--paper); border-left: 4px solid var(--royal); }
-.pxquote canvas { flex: none; }
-.pxquote span { font: 500 .82rem/1.45 var(--mono); color: var(--navy); }
-.pxquote small { display: block; margin-top: .25rem; font: .8rem var(--font); color: var(--muted); }
 
-.footer__dude { display: flex; align-items: center; gap: .7rem; }
-.footer__dude p { font: 500 .76rem/1.4 var(--mono); color: var(--sky); }
-.footer__dude small { display: block; font: .66rem var(--mono); color: var(--grey, #7d8aa3); letter-spacing: .06em; }
 
 @media (max-width: 560px) {
   .pxrider canvas { width: 102px !important; height: 75px !important; }
-  .pxbubble { max-width: 200px; }
   .pxroad { height: 84px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pxduo { animation: none; transform: translateX(16px); }
+  .pxrider { animation: none; transform: translateX(16px); }
   .pxweed { display: none; }
   html { scroll-behavior: auto; }
   * { transition: none !important; }
