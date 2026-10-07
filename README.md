@@ -26,9 +26,6 @@ Ana Garcia · SPORT · Jersey/Vest M · Bibs L · Socks M
 It copies that line to the clipboard when the rider taps pay. The rider pastes it into
 the Revolut field, and it shows up on the payment in Revolut Business.
 
-The Socks tier (€30) has no payment link yet. Add it to `TIERS.socks.url` and the button
-switches on.
-
 ## Refresh routes
 
 Routes come from the [Ride with GPS club](https://ridewithgps.com/organizations/8423-barcelona-cycling-network):
