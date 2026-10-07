@@ -47,6 +47,18 @@ The club map draws the routes with Leaflet over [OpenTopoMap](https://opentopoma
 a route in Ride with GPS and re-run the script to show it. `FEATURED` in the script pins routes
 to the top of the list and `DEFAULT_ROUTE` is the route opened on desktop at page load.
 
+## Deploying
+
+Push to `main` and GitHub Pages redeploys. Before committing a change to any CSS, JS or
+`data/routes.js` file, run:
+
+```bash
+python3 scripts/bust_cache.py
+```
+
+It stamps those references in `index.html` with a content hash (`app.js?v=…`), so visitors
+get the new files right away instead of a copy cached for up to 10 minutes.
+
 ## Assets
 
 Kit photos, logo and the beach-club illustration are from the 2027 kit flyer and the
