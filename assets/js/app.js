@@ -10,7 +10,10 @@
     sport: { label: "SPORT", name: "Sport kit", price: 250, kit: true,  url: "https://checkout.revolut.com/pay/a3461062-6c07-467c-b8de-de26318ea2d1" },
     socks: { label: "SOCKS", name: "Socks",     price: 30,  kit: false, url: "https://checkout.revolut.com/pay/204e310b-dd72-438d-a3ab-9d4e1a518a68" },
   };
-  const MEMBERSHIP_START = new Date("2027-01-01T00:00:00+01:00"); // Barcelona time
+  // Order window. Kit takes about a month to make, and we want it handed out
+  // before 17 Dec: close Sun 1 Nov, order goes to Obbi Mon 2 Nov, kit lands
+  // ~2 Dec, leaving two weeks of cushion. Barcelona is on CET (+01:00) by then.
+  const ORDER_CLOSE = new Date("2026-11-01T23:59:59+01:00");
   const REVOLUT_FIELD_MAX = 100;
   const STORE_KEY = "bcnr-order-2027";
 
@@ -19,7 +22,12 @@
 
   // ---- Countdown ----------------------------------------------------------
   function tick() {
-    const ms = Math.max(0, MEMBERSHIP_START - Date.now());
+    const ms = Math.max(0, ORDER_CLOSE - Date.now());
+    if (!ms) {
+      $("#countdown").classList.add("is-closed");
+      $("#cd-label").textContent = "The club order's gone to Italy";
+      return;
+    }
     const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
     $("#cd-days").textContent = d;
     $("#cd-hours").textContent = String(h).padStart(2, "0");
