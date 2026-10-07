@@ -10,10 +10,10 @@
     sport: { label: "SPORT", name: "Sport kit", price: 250, kit: true,  url: "https://checkout.revolut.com/pay/a3461062-6c07-467c-b8de-de26318ea2d1" },
     socks: { label: "SOCKS", name: "Socks",     price: 30,  kit: false, url: "https://checkout.revolut.com/pay/204e310b-dd72-438d-a3ab-9d4e1a518a68" },
   };
-  // Order window. Kit takes about a month to make, and we want it handed out
-  // before 17 Dec: close Sun 1 Nov, order goes to Obbi Mon 2 Nov, kit lands
-  // ~2 Dec, leaving two weeks of cushion. Barcelona is on CET (+01:00) by then.
-  const ORDER_CLOSE = new Date("2026-11-01T23:59:59+01:00");
+  // Order window: close Sun 25 Oct, kit lands ~1 Dec, in time for the
+  // mid-December awards banquet at Can Borrell. Clocks go back early on
+  // 25 Oct, so the deadline is in CET (+01:00).
+  const ORDER_CLOSE = new Date("2026-10-25T23:59:59+01:00");
   const REVOLUT_FIELD_MAX = 100;
   const STORE_KEY = "bcnr-order-2027";
 
