@@ -289,9 +289,14 @@
       </div>`;
   }
 
-  // Route card thumbnail: the route line in club colours, styled like the big map
+  // Route card thumbnail: the pre-rendered map from scripts/route_thumbs.py, or, if a
+  // route has none yet, the route line drawn in club colours on a plain background
+  const THUMBS = window.BCN_THUMBS || {};
   const THUMB_W = 400, THUMB_H = 126, THUMB_PAD = 16;
   function routeThumb(r) {
+    if (THUMBS[r.id]) {
+      return `<img class="route__map" src="assets/img/routes/${r.id}.jpg?v=${THUMBS[r.id]}" alt="" width="800" height="252" loading="lazy">`;
+    }
     const ll = r.line ? decode(r.line) : [];
     if (ll.length < 2) return "";
     const k = Math.cos((ll.reduce((sum, p) => sum + p[0], 0) / ll.length) * Math.PI / 180);

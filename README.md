@@ -41,6 +41,18 @@ only fetch what changed; add `--fresh` to refetch everything. It fetches 3 route
 retries dropped connections; if any route still fails, `data/routes.js` is left untouched.
 Only route fields are kept, never owner names or other personal details.
 
+Then render the route card thumbnails (needs Pillow, `pip install pillow`):
+
+```bash
+python3 scripts/route_thumbs.py
+```
+
+This draws each route in club colours over the OpenTopoMap base map into
+`assets/img/routes/{id}.jpg` and writes `data/thumbs.js` (id → content hash, for cache-busting).
+Map tiles are cached in `scripts/.cache/tiles/`, so re-runs only fetch new areas, gently. A route
+without a thumbnail falls back to its line drawn on a plain background. The thumbnails are
+CC-BY-SA derivatives of OpenTopoMap; the credit sits under the route list.
+
 The club map draws the routes with Leaflet over [OpenTopoMap](https://opentopomap.org) tiles
 (CC-BY-SA, attribution shown on the map, no API key). Route photos load from
 `https://ridewithgps.com/photos/{highlighted_photo_id}/medium.jpg`; set a highlighted photo on
