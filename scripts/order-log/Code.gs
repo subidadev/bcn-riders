@@ -1,4 +1,10 @@
 /**
+ * @OnlyCurrentDoc
+ * Limits this script to the one spreadsheet it's attached to. Without this line
+ * Google asks for access to every spreadsheet in your account.
+ */
+
+/**
  * BCN Riders · order attempt log (Google Apps Script web app, bound to a Google Sheet)
  *
  * Each time a rider taps "Copy & pay" or "Copy" on the site, the page sends their
@@ -9,6 +15,10 @@
  * trimmed and length-capped, a hidden honeypot field catches form-filling bots,
  * repeat clicks within a minute are ignored, and at most 30 rows are logged per
  * 10 minutes so a flood can't burn the daily email quota.
+ *
+ * Permissions it asks for: this spreadsheet only (@OnlyCurrentDoc above), send email
+ * as you (notifications only; it can't read your mail), and your email address (to
+ * know where to send them).
  */
 
 const NOTIFY_EMAIL = "";          // leave empty to email the account that deploys this script
