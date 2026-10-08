@@ -62,8 +62,8 @@ get the new files right away instead of a copy cached for up to 10 minutes.
 ## Assets
 
 Site icons: `favicon.ico` (16/32/48, at the root), `assets/img/icon-64.png` (also the file for
-Tiiny's project Logo setting) and `assets/img/apple-touch-icon.png`. `assets/img/share.jpg` is the
-1200×630 link-preview image.
+Tiiny's project Logo setting) and `assets/img/apple-touch-icon.png`. `assets/img/share.png` is the
+200×200 link-preview image (also the file for Tiiny's preview image setting).
 
 Kit photos, logo and the beach-club illustration are from the 2027 kit flyer and the
 Obbi design book.
