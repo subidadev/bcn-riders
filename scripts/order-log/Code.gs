@@ -56,16 +56,21 @@ function doPost(e) {
     const socks = pick_(d.socks, SOCK_SIZES);
     if (!tier || !name) return ok_();
 
+    // The lock only protects the de-dupe and flood counters. If it can't be had (two
+    // riders at the same moment, or a slow cold start), log the order anyway rather
+    // than lose it.
     const lock = LockService.getScriptLock();
-    if (!lock.tryLock(5000)) return ok_();
+    const locked = lock.tryLock(25000);
     try {
-      const cache = CacheService.getScriptCache();
-      const dupKey = "dup:" + digest_([action, tier, name.toLowerCase(), top, bibs, socks].join("|"));
-      if (cache.get(dupKey)) return ok_();                    // same click again within a minute
-      const count = Number(cache.get("count") || 0);
-      if (count >= 30) return ok_();                          // flood guard
-      cache.put(dupKey, "1", 60);
-      cache.put("count", String(count + 1), 600);
+      if (locked) {
+        const cache = CacheService.getScriptCache();
+        const dupKey = "dup:" + digest_([action, tier, name.toLowerCase(), top, bibs, socks].join("|"));
+        if (cache.get(dupKey)) return ok_();                  // same click again within a minute
+        const count = Number(cache.get("count") || 0);
+        if (count >= 30) return ok_();                        // flood guard
+        cache.put(dupKey, "1", 60);
+        cache.put("count", String(count + 1), 600);
+      }
 
       const line = clean_(d.line, 120);
       const site = clean_(d.site, 60);
@@ -80,7 +85,7 @@ function doPost(e) {
           "\n\nAll attempts: " + SpreadsheetApp.getActiveSpreadsheet().getUrl()
       );
     } finally {
-      lock.releaseLock();
+      if (locked) lock.releaseLock();
     }
   } catch (err) {
     console.error(err);

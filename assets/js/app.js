@@ -17,7 +17,7 @@
   // Order log: each "Copy & pay" / "Copy" is sent to a Google Apps Script web app
   // (scripts/order-log/Code.gs) that adds a row to the club's order sheet and emails
   // the organiser. Paste the deployment's /exec URL here; empty = logging off.
-  const ORDER_LOG_URL = "";
+  const ORDER_LOG_URL = "https://script.google.com/macros/s/AKfycbw-2Pp8XaKehB686Gql5YN84jAh210A4VcFe9aVunfoUhgmVJKAQZjuapNpkFn367i72A/exec";
   const REVOLUT_FIELD_MAX = 100;
   const STORE_KEY = "bcnr-order-2027";
 
