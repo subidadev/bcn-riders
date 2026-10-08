@@ -14,6 +14,10 @@
   // mid-December awards banquet at Can Borrell. Clocks go back early on
   // 25 Oct, so the deadline is in CET (+01:00).
   const ORDER_CLOSE = new Date("2026-10-25T23:59:59+01:00");
+  // Order log: each "Copy & pay" / "Copy" is sent to a Google Apps Script web app
+  // (scripts/order-log/Code.gs) that adds a row to the club's order sheet and emails
+  // the organiser. Paste the deployment's /exec URL here; empty = logging off.
+  const ORDER_LOG_URL = "";
   const REVOLUT_FIELD_MAX = 100;
   const STORE_KEY = "bcnr-order-2027";
 
@@ -91,7 +95,8 @@
       payBtn.textContent = `Copy & pay €${t.price} on Revolut →`;
       payBtn.removeAttribute("aria-disabled");
       payBtn.href = t.url;
-      payNote.textContent = "Secure checkout by Revolut. Paid to Guava Bikes, who handle the club's bulk order.";
+      payNote.textContent = "Secure checkout by Revolut. Paid to Guava Bikes, who handle the club's bulk order." +
+        (ORDER_LOG_URL ? " We note your name and sizes when you tap pay, to match your payment to your kit." : "");
     }
 
     if (attempted) showErrors(m);
@@ -129,6 +134,22 @@
     toast.animate?.([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 220 });
   }
 
+  // Fire-and-forget: a text/plain beacon needs no CORS preflight and survives the
+  // tab switching to Revolut.
+  function logAttempt(action) {
+    if (!ORDER_LOG_URL) return;
+    const t = TIERS[tierKey()];
+    const body = JSON.stringify({
+      action, tier: tierKey(), name: clean(nameEl.value),
+      top: t.kit ? topEl.value : "", bibs: t.kit ? bibsEl.value : "", socks: socksEl.value,
+      line: orderLine(), site: location.host, hp: form.elements.website?.value || "",
+    });
+    try {
+      if (navigator.sendBeacon?.(ORDER_LOG_URL, new Blob([body], { type: "text/plain" }))) return;
+    } catch {}
+    fetch(ORDER_LOG_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain" }, body }).catch(() => {});
+  }
+
   payBtn.addEventListener("click", (e) => {
     attempted = true;
     const m = missing();
@@ -142,6 +163,7 @@
     // then let the link open Revolut in a new tab.
     copy(orderLine());
     flashToast();
+    logAttempt("pay");
   });
 
   $("#copy-btn").addEventListener("click", async () => {
@@ -149,6 +171,7 @@
     const m = missing();
     if (m.name || m.sizes.length) { showErrors(m); return; }
     const ok = await copy(orderLine());
+    logAttempt("copy");
     const btn = $("#copy-btn");
     btn.textContent = ok ? "Copied ✓" : "Select & copy";
     setTimeout(() => (btn.textContent = "Copy"), 1800);

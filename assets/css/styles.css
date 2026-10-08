@@ -207,6 +207,8 @@ input:focus, select:focus { outline: none; border-color: var(--royal); backgroun
 .summary__line { font: 500 .95rem var(--mono); color: var(--navy); word-break: break-word; }
 .summary__line.is-empty { color: var(--muted); font-family: var(--font); font-weight: 400; }
 .summary__copy { font: 600 .8rem var(--font); background: var(--navy); color: var(--white); border: 0; border-radius: 999px; padding: .55em 1em; cursor: pointer; }
+/* honeypot: hidden from people, filled in by form bots */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .order__fine { font-size: .8rem; color: var(--muted); margin: -.6rem 0 0; text-align: center; }
 .toast { background: var(--navy); color: var(--sky-2); padding: 1rem 1.1rem; border-radius: var(--radius-sm); font-size: .9rem; }
 .toast b { color: var(--sky); margin-right: .3rem; }

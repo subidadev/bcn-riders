@@ -71,6 +71,28 @@ python3 scripts/bust_cache.py
 It stamps those references in `index.html` with a content hash (`app.js?v=…`), so visitors
 get the new files right away instead of a copy cached for up to 10 minutes.
 
+## Order notifications
+
+Every "Copy & pay" (and "Copy") on the order form is sent to a Google Apps Script web app,
+`scripts/order-log/Code.gs`, which adds a row to a Google Sheet (time, build, name, sizes, order
+line, site) and emails the organiser. Logging is off while `ORDER_LOG_URL` in `assets/js/app.js`
+is empty. Rows are attempts, not payments: match them against Revolut by the order line.
+
+One-time setup:
+
+1. Create a Google Sheet, e.g. "BCN Riders orders 2027".
+2. Extensions → Apps Script. Replace the starter code with `scripts/order-log/Code.gs` and save.
+   Set `NOTIFY_EMAIL` if the emails should go somewhere other than your own account.
+3. Choose `setup` in the toolbar and Run it. Approve the permissions (it's your own script, so
+   Google warns it isn't verified: Advanced → Go to the project). An "Attempts" tab appears.
+4. Deploy → New deployment → Web app. Execute as: Me. Who has access: Anyone. Deploy and copy
+   the URL ending in `/exec`.
+5. Put that URL in `ORDER_LOG_URL`, run `python3 scripts/bust_cache.py`, commit and publish.
+
+After editing the script later: Deploy → Manage deployments → Edit → New version (the URL
+stays the same). The script ignores repeat clicks within a minute, drops unknown builds and
+sizes, and logs at most 30 rows per 10 minutes.
+
 ## Assets
 
 Site icons: the beach umbrella. `assets/img/favicon-umbrella.ico` (16/32/48/64) and
