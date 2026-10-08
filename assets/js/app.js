@@ -289,6 +289,33 @@
       </div>`;
   }
 
+  // Route card thumbnail: the route line in club colours, styled like the big map
+  const THUMB_W = 400, THUMB_H = 126, THUMB_PAD = 16;
+  function routeThumb(r) {
+    const ll = r.line ? decode(r.line) : [];
+    if (ll.length < 2) return "";
+    const k = Math.cos((ll.reduce((sum, p) => sum + p[0], 0) / ll.length) * Math.PI / 180);
+    const xs = ll.map((p) => p[1] * k), ys = ll.map((p) => -p[0]);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const s = Math.min((THUMB_W - 2 * THUMB_PAD) / (maxX - minX || 1e-9), (THUMB_H - 2 * THUMB_PAD) / (maxY - minY || 1e-9));
+    const ox = (THUMB_W - (maxX - minX) * s) / 2, oy = (THUMB_H - (maxY - minY) * s) / 2;
+    const pts = [];
+    xs.forEach((x, i) => {
+      const p = [ox + (x - minX) * s, oy + (ys[i] - minY) * s];
+      const last = pts[pts.length - 1];
+      if (!last || i === xs.length - 1 || Math.hypot(p[0] - last[0], p[1] - last[1]) > 0.8) pts.push(p);
+    });
+    const d = "M" + pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L");
+    const [sx, sy] = pts[0], [ex, ey] = pts[pts.length - 1];
+    const stroke = 'fill="none" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"';
+    return `<svg class="route__map" viewBox="0 0 ${THUMB_W} ${THUMB_H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <path d="${d}" stroke="${CASING}" stroke-width="7" ${stroke}/>
+            <path d="${d}" stroke="${KIND_COLOR[r.kind] || KIND_COLOR.road}" stroke-width="3.5" ${stroke}/>
+            ${r.type === "loop" ? "" : `<circle class="route__end" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="5"/>`}
+            <circle class="route__start" cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="5"/>
+          </svg>`;
+  }
+
   // Map
   const mapEl = $("#clubmap");
   const card = $("#route-card");
@@ -442,7 +469,7 @@
     listEl.innerHTML = page.length
       ? page.map((r) => `
         <article class="route${r.id === selected ? " is-on" : ""}" data-id="${r.id}" tabindex="0" aria-label="Show ${esc(title(r))} on the map">
-          <img class="route__map" src="https://ridewithgps.com/routes/${r.id}/hover_preview.png" alt="" loading="lazy" onerror="this.remove()">
+          ${routeThumb(r)}
           <div class="route__top">
             <span class="route__name">${esc(r.name)}</span>
             <span class="tag tag--${r.kind}">${kindLabel[r.kind]}</span>

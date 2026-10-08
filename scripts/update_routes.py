@@ -113,11 +113,12 @@ def simplify(pts, tol_m):
         a, b = stack.pop()
         (ax, ay), (bx, by) = xy[a], xy[b]
         dx, dy = bx - ax, by - ay
-        L = math.hypot(dx, dy) or 1e-9
+        L = math.hypot(dx, dy)
         best, idx = 0, None
         for i in range(a + 1, b):
             px, py = xy[i]
-            d = abs(dy * (px - ax) - dx * (py - ay)) / L
+            # A loop can end exactly where it starts; then measure from that point
+            d = abs(dy * (px - ax) - dx * (py - ay)) / L if L > 1e-6 else math.hypot(px - ax, py - ay)
             if d > best:
                 best, idx = d, i
         if idx is not None and best > tol_m:
