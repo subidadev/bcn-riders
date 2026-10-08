@@ -77,7 +77,9 @@ Site icons: the beach umbrella. `assets/img/favicon-umbrella.ico` (16/32/48/64) 
 `assets/img/favicon-umbrella-64.png` are the sources; `favicon.ico` and `favicon.png` at the root are
 copies of them (Tiiny rewrites the icon link to `/favicon.png`, so it must ship with every publish).
 `assets/img/apple-touch-icon.png` is the 180px home-screen icon. `assets/img/share.png` is the
-200×200 link-preview image ("Order your kit"); the same file goes in Tiiny's preview image setting.
+200×200 link-preview image ("Order your kit"). Tiiny serves its preview image from `/og-image.png`;
+when publishing to Tiiny, add a copy of `share.png` named `og-image.png` at the root of the upload
+and it replaces whatever was set in the Tiiny dashboard.
 
 Kit photos, logo and the beach-club illustration are from the 2027 kit flyer and the
 Obbi design book.
