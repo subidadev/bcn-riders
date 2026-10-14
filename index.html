@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="assets/css/styles.css?v=a50db539">
+  <link rel="stylesheet" href="assets/css/styles.css?v=6fcf93d8">
 </head>
 <body>
 
@@ -182,8 +182,15 @@
           <small class="field__err" id="name-err" hidden>Add your name so we can match your payment to your kit.</small>
         </div>
 
+        <div class="field">
+          <label class="label" for="phone">3 · WhatsApp number</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+34 612 345 678" maxlength="20" required>
+          <small class="field__hint">The number you use in the group chat. It stays with the organisers and isn't added to your Revolut order line.</small>
+          <small class="field__err" id="phone-err" hidden>Add your WhatsApp number, with the country code if it isn't Spanish.</small>
+        </div>
+
         <div class="sizes">
-          <span class="label">3 · Sizes <a href="#sizes" class="label__link">size guide ↓</a></span>
+          <span class="label">4 · Sizes <a href="#sizes" class="label__link">size guide ↓</a></span>
           <div class="sizes__grid">
             <div class="field kit-only">
               <label for="size-top">Jersey / vest</label>
@@ -417,6 +424,6 @@
 <script src="data/routes.js?v=a1edf668"></script>
 <script src="data/thumbs.js?v=8093f69d"></script>
 <script src="assets/js/pixels.js?v=976097f1"></script>
-<script src="assets/js/app.js?v=ad1c6a46"></script>
+<script src="assets/js/app.js?v=c23a9f4e"></script>
 </body>
 </html>

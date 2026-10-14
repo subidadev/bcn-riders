@@ -27,12 +27,16 @@ const TZ = "Europe/Madrid";
 const TIERS = { pro: "PRO", sport: "SPORT", socks: "SOCKS" };
 const KIT_SIZES = ["XXS", "XS", "S", "M", "L", "XL", "XXL"];
 const SOCK_SIZES = ["S", "M", "L"];
-const HEADERS = ["Time (Barcelona)", "Action", "Build", "Name", "Jersey / vest", "Bibs", "Socks", "Order line", "Site"];
+// New columns go on the end so rows logged before them stay lined up.
+const HEADERS = ["Time (Barcelona)", "Action", "Build", "Name", "Jersey / vest", "Bibs", "Socks", "Order line", "Site", "WhatsApp"];
 
-/** Run once from the editor: creates the sheet and asks for permissions. */
+/**
+ * Run once from the editor: creates the sheet and asks for permissions. Safe to run
+ * again after HEADERS changes; it rewrites the header row only.
+ */
 function setup() {
   const sheet = sheet_();
-  if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   sheet.setFrozenRows(1);
   sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
   console.log("Ready. Notifications go to " + (NOTIFY_EMAIL || Session.getEffectiveUser().getEmail()));
@@ -54,6 +58,7 @@ function doPost(e) {
     const top = kit ? pick_(d.top, KIT_SIZES) : "";
     const bibs = kit ? pick_(d.bibs, KIT_SIZES) : "";
     const socks = pick_(d.socks, SOCK_SIZES);
+    const phone = phone_(d.phone);
     if (!tier || !name) return ok_();
 
     // The lock only protects the de-dupe and flood counters. If it can't be had (two
@@ -75,13 +80,14 @@ function doPost(e) {
       const line = clean_(d.line, 120);
       const site = clean_(d.site, 60);
       const when = Utilities.formatDate(new Date(), TZ, "yyyy-MM-dd HH:mm:ss");
-      sheet_().appendRow([when, action, tier, safe_(name), top, bibs, socks, safe_(line), safe_(site)]);
+      // The leading ' keeps the number as text: no formula from "+", no lost zeros.
+      sheet_().appendRow([when, action, tier, safe_(name), top, bibs, socks, safe_(line), safe_(site), phone && "'" + phone]);
 
       const verb = action === "pay" ? "went to pay" : "copied their order";
       MailApp.sendEmail(
         NOTIFY_EMAIL || Session.getEffectiveUser().getEmail(),
         "BCN Riders order: " + tier + " · " + name,
-        name + " " + verb + ".\n\n" + line + "\n\n" + when + " Barcelona time, via " + site +
+        name + " " + verb + ".\n\n" + line + (phone ? "\nWhatsApp: " + phone : "") + "\n\n" + when + " Barcelona time, via " + site +
           "\n\nAll attempts: " + SpreadsheetApp.getActiveSpreadsheet().getUrl()
       );
     } finally {
@@ -114,6 +120,14 @@ function pick_(v, allowed) {
 /** Stop a name like "=HYPERLINK(...)" from running as a formula in the sheet. */
 function safe_(v) {
   return /^[=+\-@]/.test(v) ? "'" + v : v;
+}
+
+/** "+34612345678" style: a leading + and 8 to 15 digits, or "" if it isn't that. */
+function phone_(v) {
+  const s = clean_(v, 20);
+  const digits = s.replace(/\D/g, "");
+  if (digits.length < 8 || digits.length > 15) return "";
+  return (s.charAt(0) === "+" ? "+" : "") + digits;
 }
 
 function digest_(s) {

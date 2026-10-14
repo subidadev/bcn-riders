@@ -43,6 +43,7 @@
   // ---- Order form ---------------------------------------------------------
   const form = $("#order-form");
   const nameEl = $("#name");
+  const phoneEl = $("#phone");
   const topEl = $("#size-top");
   const bibsEl = $("#size-bibs");
   const socksEl = $("#size-socks");
@@ -54,6 +55,16 @@
 
   const tierKey = () => form.elements.tier.value;
   const clean = (s) => s.replace(/\s+/g, " ").replace(/[|·]/g, "").trim();
+  // WhatsApp number as +<country><number>, the form WhatsApp itself uses, or "" if
+  // invalid. 9 digits is a Spanish number written without +34; anything else needs
+  // its country code (+ or 00) and 8 to 15 digits.
+  function phone() {
+    const raw = phoneEl.value.trim();
+    const intl = /^(\+|00)/.test(raw);
+    const digits = raw.replace(/\D/g, "").replace(intl && raw.startsWith("00") ? /^00/ : /^$/, "");
+    if (!intl) return /^[6-9]\d{8}$/.test(digits) ? "+34" + digits : "";
+    return digits.length >= 8 && digits.length <= 15 ? "+" + digits : "";
+  }
 
   function orderLine() {
     const t = TIERS[tierKey()];
@@ -72,6 +83,7 @@
     const sizes = t.kit ? [topEl, bibsEl, socksEl] : [socksEl];
     return {
       name: !clean(nameEl.value),
+      phone: !phone(),
       sizes: sizes.filter((el) => !el.value),
     };
   }
@@ -81,9 +93,9 @@
     const t = TIERS[key];
     form.classList.toggle("is-socks", !t.kit);
     const m = missing();
-    const ready = !m.name && m.sizes.length === 0;
+    const ready = !m.name && !m.phone && m.sizes.length === 0;
 
-    summaryEl.textContent = ready ? orderLine() : "Fill in your name and sizes";
+    summaryEl.textContent = ready ? orderLine() : "Fill in your name, number and sizes";
     summaryEl.classList.toggle("is-empty", !ready);
 
     if (!t.url) {
@@ -96,7 +108,7 @@
       payBtn.removeAttribute("aria-disabled");
       payBtn.href = t.url;
       payNote.textContent = "Secure checkout by Revolut. Paid to Guava Bikes, who handle the club's bulk order." +
-        (ORDER_LOG_URL ? " We note your name and sizes when you tap pay, to match your payment to your kit." : "");
+        (ORDER_LOG_URL ? " We note your name, number and sizes when you tap pay, to match your payment to your kit." : "");
     }
 
     if (attempted) showErrors(m);
@@ -106,6 +118,8 @@
   function showErrors(m) {
     nameEl.classList.toggle("is-invalid", m.name);
     $("#name-err").hidden = !m.name;
+    phoneEl.classList.toggle("is-invalid", m.phone);
+    $("#phone-err").hidden = !m.phone;
     [topEl, bibsEl, socksEl].forEach((el) => el.classList.toggle("is-invalid", m.sizes.includes(el)));
     $("#size-err").hidden = m.sizes.length === 0;
   }
@@ -140,7 +154,7 @@
     if (!ORDER_LOG_URL) return;
     const t = TIERS[tierKey()];
     const body = JSON.stringify({
-      action, tier: tierKey(), name: clean(nameEl.value),
+      action, tier: tierKey(), name: clean(nameEl.value), phone: phone(),
       top: t.kit ? topEl.value : "", bibs: t.kit ? bibsEl.value : "", socks: socksEl.value,
       line: orderLine(), site: location.host, hp: form.elements.website?.value || "",
     });
@@ -153,10 +167,10 @@
   payBtn.addEventListener("click", (e) => {
     attempted = true;
     const m = missing();
-    if (m.name || m.sizes.length) {
+    if (m.name || m.phone || m.sizes.length) {
       e.preventDefault();
       showErrors(m);
-      (m.name ? nameEl : m.sizes[0]).focus();
+      (m.name ? nameEl : m.phone ? phoneEl : m.sizes[0]).focus();
       return;
     }
     // Start the copy synchronously inside the click so it keeps user activation,
@@ -169,7 +183,7 @@
   $("#copy-btn").addEventListener("click", async () => {
     attempted = true;
     const m = missing();
-    if (m.name || m.sizes.length) { showErrors(m); return; }
+    if (m.name || m.phone || m.sizes.length) { showErrors(m); return; }
     const ok = await copy(orderLine());
     logAttempt("copy");
     const btn = $("#copy-btn");
@@ -194,7 +208,7 @@
   function save() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
-        tier: tierKey(), name: nameEl.value, top: topEl.value, bibs: bibsEl.value, socks: socksEl.value,
+        tier: tierKey(), name: nameEl.value, phone: phoneEl.value, top: topEl.value, bibs: bibsEl.value, socks: socksEl.value,
       }));
     } catch {}
   }
@@ -204,6 +218,7 @@
       if (!s) return;
       if (TIERS[s.tier]) form.elements.tier.value = s.tier;
       nameEl.value = s.name || "";
+      phoneEl.value = s.phone || "";
       topEl.value = s.top || "";
       bibsEl.value = s.bibs || "";
       socksEl.value = s.socks || "";

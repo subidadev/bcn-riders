@@ -75,7 +75,8 @@ get the new files right away instead of a copy cached for up to 10 minutes.
 
 Every "Copy & pay" (and "Copy") on the order form is sent to a Google Apps Script web app,
 `scripts/order-log/Code.gs`, which adds a row to a Google Sheet (time, build, name, sizes, order
-line, site) and emails the organiser. Logging is off while `ORDER_LOG_URL` in `assets/js/app.js`
+line, site, WhatsApp number) and emails the organiser. The WhatsApp number is only logged, never
+added to the Revolut order line; it's there to match orders against the group chat. Logging is off while `ORDER_LOG_URL` in `assets/js/app.js`
 is empty. Rows are attempts, not payments: match them against Revolut by the order line.
 
 One-time setup:
@@ -90,7 +91,7 @@ One-time setup:
 5. Put that URL in `ORDER_LOG_URL`, run `python3 scripts/bust_cache.py`, commit and publish.
 
 After editing the script later: Deploy → Manage deployments → Edit → New version (the URL
-stays the same). The script ignores repeat clicks within a minute, drops unknown builds and
+stays the same). If `HEADERS` changed, run `setup` once more to rewrite the header row. The script ignores repeat clicks within a minute, drops unknown builds and
 sizes, and logs at most 30 rows per 10 minutes.
 
 ## Assets
