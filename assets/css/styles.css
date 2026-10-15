@@ -184,7 +184,7 @@ p { margin: 0 0 1em; }
 
 .field { display: flex; flex-direction: column; gap: .35rem; }
 .field > label:not(.label) { font-size: .85rem; font-weight: 600; color: var(--navy); }
-input[type="text"], input[type="tel"], input[type="search"], select {
+input[type="text"], input[type="search"], select {
   font: 400 1rem var(--font);
   color: var(--ink);
   padding: .85em 1em;
@@ -198,7 +198,6 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 input:focus, select:focus { outline: none; border-color: var(--royal); background: var(--white); }
 .is-invalid { border-color: #c2412d !important; }
 .field__err { color: #b2391f; font-size: .82rem; }
-.field__hint { color: var(--muted); font-size: .8rem; }
 .sizes__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
 .is-socks .kit-only { display: none; }
 .is-socks .sizes__grid { grid-template-columns: 1fr; max-width: 240px; }
