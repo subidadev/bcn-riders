@@ -8,7 +8,7 @@
   const TIERS = {
     pro:   { label: "PRO",   name: "Pro kit",   price: 310, kit: true,  url: "https://checkout.revolut.com/pay/13c8f00d-b9e4-40de-af45-252ce0d1945d" },
     sport: { label: "SPORT", name: "Sport kit", price: 250, kit: true,  url: "https://checkout.revolut.com/pay/a3461062-6c07-467c-b8de-de26318ea2d1" },
-    socks: { label: "SOCKS", name: "Socks",     price: 30,  kit: false, url: "https://checkout.revolut.com/pay/204e310b-dd72-438d-a3ab-9d4e1a518a68" },
+    socks: { label: "SOCKS", name: "Socks",     price: 30,  kit: false, url: "https://checkout.revolut.com/pay/05fe308c-b93f-4728-9569-58d0d6971342" },
   };
   // Order window: close Sun 25 Oct, kit lands ~1 Dec, in time for the
   // mid-December awards banquet at Can Borrell. Clocks go back early on
